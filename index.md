@@ -6,6 +6,20 @@ The purpose of this workshop is to get you familiar with the UNIX environment an
 - Navigate the file structure and move files/folders around.
 - Queue up a job to run on the compute nodes (a job for example could be a sequence alignment from an NGS run)
 
+## collapsible markdown?
+
+<details><summary>Solution</summary>
+<p>
+
+#### yes, even hidden code blocks!
+
+```python
+print("hello world!")
+```
+
+</p>
+</details>
+
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
