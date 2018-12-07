@@ -1,6 +1,10 @@
 ## Using UNIX and the Lunarc LSEN HPC system
 
-The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing.
+The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing. Bythe time you are done here, you should be able to do the following:
+
+- Log into Luarc using the Thinlinc client to enter the Lunarc desktop environment
+- Navigate the file structure and move files/folders around.
+- Queue up a job to run on the compute nodes (a job for example could be a sequence alignment from an NGS run)
 
 ### Markdown
 
