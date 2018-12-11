@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Using UNIX and the Lunarc LSEN HPC system</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<script> https://github.com/Mottie/GitHub-userscripts/blob/master/github-collapse-in-comment.user.js </script>
+
+<h2>Using UNIX and the Lunarc LSEN HPC system</h2>
+
+<p>The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing. By the time you are done here, you should be able to do the following:</p>
+
+<ul>
+<li>Log into Luarc using the ThinLinc client to enter the Lunarc desktop environment</li>
+<li>Navigate the file structure and move files/folders around.</li>
+<li>Queue up a job to run on the compute nodes (a job for example could be a sequence alignment from an NGS run)</li>
+</ul>
+
+<h2>Get your computer ready!</h2>
+
+<p>We need you to have installed the ThinLink client on the computer you bring to the workshop.
+You can see this as a first exercise: Use google to learn about ThinLink, where to get it and how to install it for your system.<br/>
+Use this knowledge to install it ;-)</p>
+
+<p><details><summary>I can not use Google!</summary></p>
+
+<p>
+<a href="https://lunarc-documentation.readthedocs.io/en/latest/using_hpc_desktop/" target='_blank' >google: lunarc thinlink # first entry</a>
+</p>
+
+<p></details></p>
+
+<p>Security is a high priority an aurora and this starts with the server rejecting connections from all but the BMC network. So you can only use Aurora from within the BMC network.
+TODO: SOMEONE ADD THE VPN INFO HERE?</p>
+
+<h3>Connection info</h3>
+
+<ul>
+<li>Server: aurora-ls2.lunarc.lu.se</li>
+<li>Username: your aurora username</li>
+<li>Password: your aurora password</li>
+</ul>
+
+<p>One time password:
+The one time password is created on your phone using either the &#39;Pocket Pass&#39; app for MacOS or the &#39;&#39; app for android based phones.</p>
+
+<h2>The ThinLink Interface</h2>
+
+<p>The window manager is based on <a href="https://mate-desktop.org/">MATE Desktop</a>.</p>
+
+<p>Most scientific programs for Bioinformaticians come without a graphical user interface and therefore the &#39;Terminal&#39; is our most basic, but likely most used tool.
+The &#39;Terminal&#39; is so important that the MATE desktop has a direcxt link to it in the top panel between the file explorer and the web browser icon.</p>
+
+<p>In fact you could just click on that as we will use it extensively in this course.</p>
+
+<h3>Data storage</h3>
+
+<p>All user data should be stored on our data server - not in your home folder!</p>
+
+<pre><code class="bash"># home folder
+ls ~
+## data server (your folder) 
+me=`whoami`
+ls /projects/fs1/$me
+</code></pre>
+
+<p><details><summary>More info on that</summary></p>
+
+<p>
+<ul>
+<li> &lsquo;~&rsquo; is an inbuilt variable that points to your home directory.</li>
+<li> &lsquo;me=whoami&rsquo; creates a local variable with the output of the whoami (speak &lsquo;who am I&rsquo;) program which returns our username (stefanl for me) </li>
+<li> ls /projects/fs1/$me simply lists the contents of the folder e.g. /projects/fs1/stefanl</li>
+</ul>
+</p>
+
+<p></details></p>
+
+<h3>Create a symbolic link to the data folder in your home directory.</h3>
+
+<p>I am rather lazy and therefore would also recommend you to create a symbolic link to this folder in your home directory.</p>
+
+<p>In the Terminal use the &#39;ln&#39; program to create a link from &#39;/projects/fs1/&ldquo;your username&rdquo;&#39; to &#39;~/NAS&#39;.</p>
+
+<p><details><summary>How to create this link</summary></p>
+
+<p>
+This will make the data storage path available as ~/NAS</BR>
+
+<pre><code class="bash">ln -s /projects/fs1/"your username" ~/NAS
+</code></pre>
+</p>
+
+<p></details></p>
+
+<h2>Common programs:</h2>
+
+<p>Every Linux/Unix installation has a basic set of tools installed that are extremely helpful for the daily work.</p>
+
+<p>Today we already used cd and ls which moves between directories respectively links files to other locations.</p>
+
+<p>Other very commonly used programs are ls, touch, cp, mkdir, mv, rm, echo, cat, cut, head, tail, grep, wc, tar, gzip, gunzip and others.</p>
+
+<p>You can read up on these programs using:</p>
+
+<pre><code class="bash"># get info to a program
+man &quot;program name&quot;
+</code></pre>
+
+<p>Unfortunately this is not working on aurora. The internet also contains all this information.</p>
+
+<h3>Create files / directories</h3>
+
+<p>Go to your data server folder, create a folder with the name &#39;TestFileCreation&#39; and create a file named README.txt in the folder. The file should contain the string &#39;Here we play with files and folders&#39;.</p>
+
+<p>As a hint - you need the tools cd, mkdir and echo.</p>
+
+<p>Just writing the program name without additional information into the Terminal gives help on how to use the program.</p>
+
+<p><details><summary>Solution</summary></p>
+
+<p>
+<pre><code class="bash">cd ~/NAS
+mkdir TestFileCreation
+cd TestFileCreation
+echo 'Here we play with files and folders' > README.txt
+</code></pre>
+</p>
+
+<p></details></p>
+
+<h3>Extract information from a file</h3>
+
+<p>On aurora we store genome information in a special folder that is readable by all users:</p>
+
+<pre><code class="bash">ls /projects/fs1/common/genome/lunarc/
+# e.g. gencode information mv19
+ls /projects/fs1/common/genome/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+</code></pre>
+
+<p>These folders soon get very long and therefore I recommend you to create links (again):</p>
+
+<p>Link the /projects/fs1/common/genome/lunarc folder to your home directory.</p>
+
+<p><details><summary>How to create this link</summary></p>
+
+<p>
+This will make the data storage path available as ~/lunarc</BR>
+
+<pre><code class="bash">ln -s /projects/fs1/common/genome/lunarc/ ~/lunarc
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p>Now get some information about the gencode.vM19.chr_patch_hapl_scaff.annotation.gtf file using ls, wc, head and tail.</p>
+
+<p>Perfect - now you know how big these gtf files are and which internal structure they have. It would be quite interesting to get information out of the file - or?</p>
+
+<p>Get all information regarding Gapdh out of the file (using grep) and put this information in a new &#39;Gapdh.gtf&#39; file in your TestFileCreation folder. And as this is a step you might forget after some time I recommend you to store how you did that in the file &#39;Gapdh.gtf.log&#39;.</p>
+
+<p><details><summary>How to &hellip;</summary></p>
+
+<p>
+<pre><code class="bash">cd ~/NAS/TestFileCreation
+grep Gapdh ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf > Gapdh.gtf
+echo 'grep Gapdh ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf > Gapdh.gtf' > Gapdh.gtf.log
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p><details><summary>For specialists please explain ;-)</summary></p>
+
+<p>
+<pre><code class="bash">history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);' > Gapdh.gtf.log
+</code></pre>
+</p>
+
+<p></details></p>
+
+<h2>Pipes</h2>
+
+<p>Pipes are a Linux/Unix way to copy information between program calls. Pipes are used all the time in Bioinformatics and therefore the <a href="https://en.wikipedia.org/wiki/Pipeline_(Unix">Pipe concept needs explanation</a>). </p>
+
+<p>You have used pipes all the time as each | and &gt; is &#39;piping&#39; information from one process to another or to a file.</p>
+
+<p>I do not want to go into detail here, but read up on that it might become important for you later on.</p>
+
+<h2>Extract with more conditions</h2>
+
+<p>If you would want to extract all genes from a certain chomosome area you need more than just one grep.
+You could use awk here!</p>
+
+<p>Task: get all genes from chr4 between bp 10000002 and 19000002 and store the info in the file &#39;chr4_10000002_19000002.genes.gtf&#39;.</p>
+
+<p><details><summary>Use awk to get gene information</summary></p>
+
+<p>
+<pre><code class="bash">fname=~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+grep -w gene $fname | awk '{ if ( $1 == "chr4" & $4 < 19000002 & $5 > 10000002 ) {print}}' > chr4_10000002_19000002.genes.gtf
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p>Have you thought about the .log file? No - do that ;-)</p>
+
+<p>I am sure you can think of more problems that can be solved like that.</p>
+
+<h1>Second half - Using Installed Software</h1>
+
+<h2>Software installed on aurora</h2>
+
+<p>Aurora uses the <a href="https://www.nersc.gov/users/software/user-environment/modules/">module system</a> to provide multiple versions of one program to all users.</p>
+
+<h2>Usage of the compute nodes</h2>
+
+<p>The computer the ThinLink client connects you to is our frontend. ONE computer for all of you. So do not run computing intensive tasks there - NEVER.</p>
+
+<p>Instead you need to use our computing nodes to run heavy workload.</p>
+
+</body>
+
+</html>

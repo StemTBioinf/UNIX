@@ -47,7 +47,8 @@ In fact you could just click on that as we will use it extensively in this cours
 
 All user data should be stored on our data server - not in your home folder!
 
-```{bash, eval = FALSE  }
+
+```bash
 # home folder
 ls ~
 ## data server (your folder) 
@@ -91,7 +92,8 @@ Other very commonly used programs are ls, touch, cp, mkdir, mv, rm, echo, cat, c
 
 You can read up on these programs using:
 
-```{bash, eval = FALSE }
+
+```bash
 # get info to a program
 man "program name"
 ```
@@ -120,7 +122,8 @@ echo 'Here we play with files and folders' > README.txt
 
 On aurora we store genome information in a special folder that is readable by all users:
 
-```{bash, eval=FALSE }
+
+```bash
 ls /projects/fs1/common/genome/lunarc/
 # e.g. gencode information mv19
 ls /projects/fs1/common/genome/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
@@ -198,10 +201,8 @@ Aurora uses the [module system](https://www.nersc.gov/users/software/user-enviro
 
 ## Usage of the compute nodes
 
-The computer the ThinLink client connects you to is our frontend. ONE computer for all of you. So do not run computing intensive tasks there - NEVER. Instead you need to use our computing nodes to run heavy workload.
+The computer the ThinLink client connects you to is our frontend. ONE computer for all of you. So do not run computing intensive tasks there - NEVER.
 
-
-Aurora uses the [SLURM system](https://slurm.schedmd.com/) to manage the compute nodes.
-
+Instead you need to use our computing nodes to run heavy workload.
 
 
