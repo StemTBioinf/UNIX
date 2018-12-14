@@ -1,5 +1,3 @@
-<> <script> https://github.com/Mottie/GitHub-userscripts/blob/master/github-collapse-in-comment.user.js </script>
-
 ## Using UNIX and the Lunarc LSEN HPC system
 
 The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing. By the time you are done here, you should be able to do the following:
