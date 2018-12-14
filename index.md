@@ -1,4 +1,4 @@
-<script> https://github.com/Mottie/GitHub-userscripts/blob/master/github-collapse-in-comment.user.js </script>
+<> <script> https://github.com/Mottie/GitHub-userscripts/blob/master/github-collapse-in-comment.user.js </script>
 
 ## Using UNIX and the Lunarc LSEN HPC system
 
