@@ -68,7 +68,7 @@ ls /projects/fs1/$me
 
 ### Create a symbolic link to the data folder in your home directory.
 
-To allow this tutorial to work with one path to the data folder only please create a symbolic link to this folder in your home directory.
+To allow this tutorial to work for all with only one path to the data folder please create a symbolic link to your data folder in your home directory.
 
 In the Terminal use the 'ln' program to create a link from '/projects/fs1/"your username"' to '~/NAS'.
 
@@ -78,11 +78,13 @@ This will make the data storage path available as ~/NAS</BR>
 
 <pre><code class="bash">ln -s /projects/fs1/"your username" ~/NAS
 </code></pre>
+
+You can also use the '$me' variable we used earlier. 
 </p>
 </details>
 
 
-## Common programs:
+## Common programs
 
 Every Linux/Unix installation has a basic set of tools installed that are extremely helpful for the daily work.
 
@@ -97,7 +99,16 @@ You can read up on these programs using:
 man "program name"
 ```
 
-Unfortunately this is not working on aurora. The internet also contains all this information.
+Unfortunately this is not working on aurora. The Internet also contains all this information.
+All well programmed command line tools do also report a basic help if you use them in the wrong way - like without options at all. Try it:
+
+```{bash }
+mkdir
+```
+
+```{bash }
+mkdir --help
+```
 
 ### Create files / directories
 
@@ -208,13 +219,13 @@ And now I want you to understand the difference:
 First lets create a useless file of 94Mb
 
 ```{ bash, eval= FALSE }
-dd if=/dev/zero of=~/NAS/TestFileCreation/file.txt count=1024 bs=100024
+dd if=/dev/zero of=~/NAS/TestFileCreation/file.dat count=1024 bs=100024
 ```
 
 Add the lines
 ```
-time cp ~/NAS/TestFileCreation/file.txt $SNIC_TMP
-time cp $SNIC_TMP/file.txt $SNIC_TMP/localCopy.gff3
+time cp ~/NAS/TestFileCreation/file.dat $SNIC_TMP
+time cp $SNIC_TMP/file.dat $SNIC_TMP/localCopy.dat
 ```
 
 On the time of writing I got these values:
@@ -238,12 +249,24 @@ In the file QnodeHD_"batch job id".err in your working directory.
 </p>
 </details>
 
+You can now delete the useless file using rm "filename".
+Be very careful - files you delete using rm can not be regenerated!
+
+
+<details><summary>Please check that before you run it</summary>
+<p>
+<pre><code class="bash">rm 
+</code></pre>
+~/NAS/TestFileCreation/file.dat
+</p>
+</details>
 
 
 ## More complicated Terminal usage
 
 
 This part of the course is optional if we have enough time. If not you are welcome to try it on your own and drop by if there are questions.
+
 
 ### Extract information from a file
 
@@ -305,13 +328,15 @@ You could use awk here!
 
 Task: get all genes from chr4 between bp 10000002 and 19000002 and store the info in the file 'chr4_10000002_19000002.genes.gtf'.
 
-<details><summary>Use awk to get gene information</summary>
+<details><summary>How to use awk to get gene information</summary>
 <p>
 <pre><code class="bash">fname=~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
 grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 10000002) ) {print}}' > chr4_10000002_19000002.genes.gtf
 </code></pre>
 </p>
 </details>
+
+You are of cause not limited to the usage of awk you could also implement the logics using Perl, Python or even C. 
 
 Have you thought about the .log file? No - do that ;-)
 
@@ -328,15 +353,25 @@ find ~
 ```
 
 It has a lot of options of which I use these: 
--name '*.R' finds all R scripts in the folder and the sub-folders
--type d finds all directories (f files)
--exec grep test {} + applies 'grep test' to all identified files
--maxdepth 1 stops at the first sub-folder level
+- **-name** '*.R' finds all R scripts in the folder and the sub-folders
+- **-type d** finds all directories (f files)
+- **-exec grep test {} +** applies 'grep test' to all identified files
+- **-maxdepth 1** stops at the first sub-folder level
 
 As an exercise please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles.
 
+This is a very complex task. Probably bad as an example here, but the more complex the more to learn.
 
-<details><summary>Oops - that is complex...</summary>
+Lets break this problem into smaller parts:
+- **find** selects the files we want to work on
+- **awk** selects the info we want to have
+- **separate outfiles** This is a big problem that kept me thinking quite a lot
+
+I figured that the easiest is to use [basename](https://linux.die.net/man/1/basename) and store this information in a [bash variable](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html). After that we can use the variable to create infile specific outfiles. Do you find a way to get rid of the 'for loop'?
+
+As we use one variable per infile we need more bash programming: e.g. a [bash for loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html).
+
+<details><summary>My solution</summary>
 <p>
 <pre><code class="bash">for f in $(find ~/lunarc/genomes/mouse/ -name '*.gtf' ); do bname=basename $f
  awk '{ if ( ($3 ~ /gene/ && $1 == "chr4" ) && ($4 < 19000002 && $5 > 10000002 )) { print } }' "$f" > " ~/NAS/TestFileCreation/${bname}"; done
@@ -344,12 +379,14 @@ As an exercise please get all genes from all installed mouse gtf files in the ar
 Honestly this did take about 30 min for me, too ;-)
 <a href="https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file">Here</a> I learned that a bash for loop might be the easiest way to deal with all problems (in the last comment).</BR>
 Problems here: How to split the result up into multiple outfiles?</BR>
-Fix: temporary variable bname to be populated in the for loop bash line 1 and after that call awk in bash line 2.
+Fix: temporary variable bname to be populated in the for loop bash line 1. Right after that call awk in bash line 2.
 The bash lines are separated by '\n' after the do statement of the for loop and terminated with a '; done'.
 </p>
 </details>
 
 
+# You have made it!
 
+Great! You have actually read and understand it all! Not - use the Internet to get more informations - come and ask is you can not figure it out. 
 
-
+And please keep on training!

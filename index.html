@@ -238,7 +238,7 @@ ls /projects/fs1/$me
 
 <h3>Create a symbolic link to the data folder in your home directory.</h3>
 
-<p>To allow this tutorial to work with one path to the data folder only please create a symbolic link to this folder in your home directory.</p>
+<p>To allow this tutorial to work for all with only one path to the data folder please create a symbolic link to your data folder in your home directory.</p>
 
 <p>In the Terminal use the &#39;ln&#39; program to create a link from &#39;/projects/fs1/&ldquo;your username&rdquo;&#39; to &#39;~/NAS&#39;.</p>
 
@@ -249,11 +249,13 @@ This will make the data storage path available as ~/NAS</BR>
 
 <pre><code class="bash">ln -s /projects/fs1/"your username" ~/NAS
 </code></pre>
+
+You can also use the &lsquo;$me&rsquo; variable we used earlier. 
 </p>
 
 <p></details></p>
 
-<h2>Common programs:</h2>
+<h2>Common programs</h2>
 
 <p>Every Linux/Unix installation has a basic set of tools installed that are extremely helpful for the daily work.</p>
 
@@ -267,7 +269,37 @@ This will make the data storage path available as ~/NAS</BR>
 man &quot;program name&quot;
 </code></pre>
 
-<p>Unfortunately this is not working on aurora. The internet also contains all this information.</p>
+<p>Unfortunately this is not working on aurora. The Internet also contains all this information.
+All well programmed command line tools do also report a basic help if you use them in the wrong way - like without options at all. Try it:</p>
+
+<pre><code class="bash">mkdir
+</code></pre>
+
+<pre><code>## mkdir: missing operand
+## Try &#39;mkdir --help&#39; for more information.
+</code></pre>
+
+<pre><code class="bash">mkdir --help
+</code></pre>
+
+<pre><code>## Usage: mkdir [OPTION]... DIRECTORY...
+## Create the DIRECTORY(ies), if they do not already exist.
+## 
+## Mandatory arguments to long options are mandatory for short options too.
+##   -m, --mode=MODE   set file mode (as in chmod), not a=rwx - umask
+##   -p, --parents     no error if existing, make parent directories as needed
+##   -v, --verbose     print a message for each created directory
+##   -Z                   set SELinux security context of each created directory
+##                          to the default type
+##       --context[=CTX]  like -Z, or if CTX is specified then set the SELinux
+##                          or SMACK security context to CTX
+##       --help display this help and exit
+##       --version output version information and exit
+## 
+## GNU coreutils online help: &lt;http://www.gnu.org/software/coreutils/&gt;
+## Full documentation at: &lt;http://www.gnu.org/software/coreutils/mkdir&gt;
+## or available locally via: info &#39;(coreutils) mkdir invocation&#39;
+</code></pre>
 
 <h3>Create files / directories</h3>
 
@@ -373,13 +405,13 @@ Lunarc has created a environment variable named $SNIC_TMP - lets see how to use 
 
 <p>First lets create a useless file of 94Mb</p>
 
-<pre><code class="bash, eval= FALSE">dd if=/dev/zero of=~/NAS/TestFileCreation/file.txt count=1024 bs=100024
+<pre><code class="bash, eval= FALSE">dd if=/dev/zero of=~/NAS/TestFileCreation/file.dat count=1024 bs=100024
 </code></pre>
 
 <p>Add the lines</p>
 
-<pre><code>time cp ~/NAS/TestFileCreation/file.txt $SNIC_TMP
-time cp $SNIC_TMP/file.txt $SNIC_TMP/localCopy.gff3
+<pre><code>time cp ~/NAS/TestFileCreation/file.dat $SNIC_TMP
+time cp $SNIC_TMP/file.dat $SNIC_TMP/localCopy.dat
 </code></pre>
 
 <p>On the time of writing I got these values:</p>
@@ -399,6 +431,19 @@ sys 0m0.065s
 
 <p>
 In the file QnodeHD_&ldquo;batch job id&rdquo;.err in your working directory.
+</p>
+
+<p></details></p>
+
+<p>You can now delete the useless file using rm &ldquo;filename&rdquo;.
+Be very careful - files you delete using rm can not be regenerated!</p>
+
+<p><details><summary>Please check that before you run it</summary></p>
+
+<p>
+<pre><code class="bash">rm 
+</code></pre>
+~/NAS/TestFileCreation/file.dat
 </p>
 
 <p></details></p>
@@ -472,7 +517,7 @@ You could use awk here!</p>
 
 <p>Task: get all genes from chr4 between bp 10000002 and 19000002 and store the info in the file &#39;chr4_10000002_19000002.genes.gtf&#39;.</p>
 
-<p><details><summary>Use awk to get gene information</summary></p>
+<p><details><summary>How to use awk to get gene information</summary></p>
 
 <p>
 <pre><code class="bash">fname=~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
@@ -481,6 +526,8 @@ grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 1000000
 </p>
 
 <p></details></p>
+
+<p>You are of cause not limited to the usage of awk you could also implement the logics using Perl, Python or even C. </p>
 
 <p>Have you thought about the .log file? No - do that ;-)</p>
 
@@ -495,15 +542,32 @@ grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 1000000
 <pre><code class="bash">find ~
 </code></pre>
 
-<p>It has a lot of options of which I use these: 
--name &#39;*.R&#39; finds all R scripts in the folder and the sub-folders
--type d finds all directories (f files)
--exec grep test {} + applies &#39;grep test&#39; to all identified files
--maxdepth 1 stops at the first sub-folder level</p>
+<p>It has a lot of options of which I use these: </p>
+
+<ul>
+<li><strong>-name</strong> &#39;*.R&#39; finds all R scripts in the folder and the sub-folders</li>
+<li><strong>-type d</strong> finds all directories (f files)</li>
+<li><strong>-exec grep test {} +</strong> applies &#39;grep test&#39; to all identified files</li>
+<li><strong>-maxdepth 1</strong> stops at the first sub-folder level</li>
+</ul>
 
 <p>As an exercise please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles.</p>
 
-<p><details><summary>Oops - that is complex&hellip;</summary></p>
+<p>This is a very complex task. Probably bad as an example here, but the more complex the more to learn.</p>
+
+<p>Lets break this problem into smaller parts:</p>
+
+<ul>
+<li><strong>find</strong> selects the files we want to work on</li>
+<li><strong>awk</strong> selects the info we want to have</li>
+<li><strong>separate outfiles</strong> This is a big problem that kept me thinking quite a lot</li>
+</ul>
+
+<p>I figured that the easiest is to use <a href="https://linux.die.net/man/1/basename">basename</a> and store this information in a <a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html">bash variable</a>. After that we can use the variable to create infile specific outfiles. Do you find a way to get rid of the &#39;for loop&#39;?</p>
+
+<p>As we use one variable per infile we need more bash programming: e.g. a <a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html">bash for loop</a>.</p>
+
+<p><details><summary>My solution</summary></p>
 
 <p>
 <pre><code class="bash">for f in $(find ~/lunarc/genomes/mouse/ -name '*.gtf' ); do bname=basename $f
@@ -512,11 +576,17 @@ grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 1000000
 Honestly this did take about 30 min for me, too ;-)
 <a href="https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file">Here</a> I learned that a bash for loop might be the easiest way to deal with all problems (in the last comment).</BR>
 Problems here: How to split the result up into multiple outfiles?</BR>
-Fix: temporary variable bname to be populated in the for loop bash line 1 and after that call awk in bash line 2.
+Fix: temporary variable bname to be populated in the for loop bash line 1. Right after that call awk in bash line 2.
 The bash lines are separated by &lsquo;\n&rsquo; after the do statement of the for loop and terminated with a &lsquo;; done&rsquo;.
 </p>
 
 <p></details></p>
+
+<h1>You have made it!</h1>
+
+<p>Great! You have actually read and understand it all! Not - use the Internet to get more informations - come and ask is you can not figure it out. </p>
+
+<p>And please keep on training!</p>
 
 </body>
 
