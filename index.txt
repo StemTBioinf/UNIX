@@ -19,18 +19,11 @@ Use this knowledge to install it ;-)
 </p>
 </details>
 
-Security is a high priority an aurora and this starts with the server rejecting connections from all but the BMC network. So you can only use Aurora from within the BMC network. VPN is also possible and will be configured in a pre-course session.
+Security is a high priority an aurora and this starts with the server rejecting connections from all but the BMC network. So you can only use Aurora from within the BMC network.
+TODO: SOMEONE ADD THE VPN INFO HERE?
+ 
 
-### SFTP - Getting data into and out of the secure area
-
-You need an sftp client in order to get data into or out of aurora-ls2.lunarc.lu.se.
-You need to connect to port 22220 and you need your phone and the OTC application.
-
-The IN folder is inbox/"your username>, the OUT folder outbox/"your username"
-and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.
-
-
-### SSH Connection info
+### Connection info
 
 - Server: aurora-ls2.lunarc.lu.se
 - Username: your aurora username
@@ -53,7 +46,8 @@ In fact you could just click on that as we will use it extensively in this cours
 
 All user data should be stored on our data server - not in your home folder!
 
-```{bash, eval = FALSE  }
+
+```bash
 # home folder
 ls ~
 ## data server (your folder) 
@@ -99,7 +93,8 @@ Other very commonly used programs are ls, touch, cp, mkdir, mv, rm, echo, cat, c
 
 You can read up on these programs using:
 
-```{bash, eval = FALSE }
+
+```bash
 # get info to a program
 man "program name"
 ```
@@ -107,12 +102,39 @@ man "program name"
 Unfortunately this is not working on aurora. The Internet also contains all this information.
 All well programmed command line tools do also report a basic help if you use them in the wrong way - like without options at all. Try it:
 
-```{bash }
+
+```bash
 mkdir
 ```
 
-```{bash }
+```
+## mkdir: missing operand
+## Try 'mkdir --help' for more information.
+```
+
+
+```bash
 mkdir --help
+```
+
+```
+## Usage: mkdir [OPTION]... DIRECTORY...
+## Create the DIRECTORY(ies), if they do not already exist.
+## 
+## Mandatory arguments to long options are mandatory for short options too.
+##   -m, --mode=MODE   set file mode (as in chmod), not a=rwx - umask
+##   -p, --parents     no error if existing, make parent directories as needed
+##   -v, --verbose     print a message for each created directory
+##   -Z                   set SELinux security context of each created directory
+##                          to the default type
+##       --context[=CTX]  like -Z, or if CTX is specified then set the SELinux
+##                          or SMACK security context to CTX
+##       --help display this help and exit
+##       --version output version information and exit
+## 
+## GNU coreutils online help: <http://www.gnu.org/software/coreutils/>
+## Full documentation at: <http://www.gnu.org/software/coreutils/mkdir>
+## or available locally via: info '(coreutils) mkdir invocation'
 ```
 
 ### Create files / directories
@@ -160,7 +182,8 @@ Aurora uses the [SLURM system](https://slurm.schedmd.com/) to manage the compute
 
 Now please pull our test files from git using
 
-```{bash, eval = FALSE }
+
+```bash
 cd ~/NAS
 mkdir git
 cd git
@@ -173,13 +196,15 @@ All our data is stored on a file server. This file server is mounted over a netw
 
 Lets first get information about the compute node harddisk configurations using 'df -h':
 
-```{bash, eval = FALSE }
+
+```bash
 df -h
 ```
 
 Prints the harddisk configuration of the frontend.
 
-```{bash, eval = FALSE }
+
+```bash
 df -h > ~/NAS/TestFileCreation/Frontend_harddisks.txt
 ```
 
@@ -187,7 +212,8 @@ Stores this information into a file.
 
 To run the same script in on the compute nodes we need a SLURM script that we can submit to the SLURM process manager. 
 
-```{bash, eval = FALSE }
+
+```bash
 echo 'df -h > ~/NAS/TestFileCreation/Node_harddisks.txt' > ~/NAS/TestFileCreation/Query_NodeHarddisk.sh
 ```
 
@@ -208,7 +234,8 @@ df -h > ~/NAS/TestFileCreation/Node_harddisks.txt #the real script part
 
 Now try to run it using sbatch:
 
-```{bash, eval = FALSE }
+
+```bash
 sbatch ~/NAS/TestFileCreation/Query_NodeHarddisk.sh
 ```
 
@@ -282,7 +309,8 @@ This part of the course is optional if we have enough time. If we are out of tim
 
 On aurora we store genome information in a special folder that is readable by all users:
 
-```{bash, eval=FALSE }
+
+```bash
 ls /projects/fs1/common/genome/lunarc/
 # e.g. gencode information mv19
 ls /projects/fs1/common/genome/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
@@ -350,7 +378,8 @@ You are of cause not limited to the usage of [awk](https://www.gnu.org/software/
 
 In Perl the awk call would look like that:
 
-```{bash, eval=FALSE }
+
+```bash
 perl -lane 'if ( $F[0] eq "chr4" and $F[2] eq "gene" and $F[3] < 19000002 and $F[4] > 10000002 ) { print } ' $fname > chr4_10000002_19000002.genes.gtf
 ```
 It is a little slower in Perl than using awk, but Perl is not known for it's speed, rather for it's string manipulation capabilities and regular expressions.
@@ -365,7 +394,8 @@ The Linux/Unix find program is extremely useful if you want to apply any of the 
 
 Anyhow - 'find' does exactly that - it does find files for you:
 
-```{bash , eval=FALSE }
+
+```bash
 find ~
 ```
 
