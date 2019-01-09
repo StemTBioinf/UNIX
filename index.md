@@ -107,7 +107,7 @@ man "program name"
 Unfortunately this is not working on aurora. The Internet also contains all this information.
 All well programmed command line tools do also report a basic help if you use them in the wrong way - like without options at all. Try it:
 
-```{bash }
+```{bash, eval = FALSE}
 mkdir
 ```
 
@@ -132,9 +132,6 @@ echo 'Here we play with files and folders' > README.txt
 </code></pre>
 </p>
 </details>
-
-Now create a second folder and copy the README.txt  into this folder.
-Add to the second file the line "The copied file has been modified" and compare that to the first file.
 
 
 ## Software installed on aurora
@@ -219,39 +216,61 @@ You can use projinfo to find out which account you have access to and change the
 </p>
 </details>
 
-How do we use the compute node local storage?
-Lunarc has created a environment variable named $SNIC_TMP - lets see how to use that:
+## How do we use the compute node local storage?
+
+Lunarc has created an environment variable named $SNIC_TMP - lets see how to use that:
 
 Add the line 'echo $SNIC_TMP >> ~/NAS/TestFileCreation/Node_harddisks.txt' to your script and run it again.
 
-And now I want you to understand the difference:
+This is how the script file should look:
 
-First lets create a useless file of 94Mb
+```
+#! /bin/bash
+#SBATCH -A lu2018-2-35 # the name of our aurora project
+#SBATCH -n 1 # how many processor cores to use
+#SBATCH -N 1 # how many processors to use (always use 1 here unless you know what you are doing)
+#SBATCH -t 00:20:00 # kill the job after ths hh::mm::ss time
+#SBATCH -J 'QnodeHD' # name of the job
+#SBATCH -o 'QnodeHD_%j.out' # stdout log file
+#SBATCH -e 'QnodeHD_%j.err' # stderr log file
+#SBATCH -p lu # which partition to use
+df -h > ~/NAS/TestFileCreation/Node_harddisks.txt #the real script part
+echo $SNIC_TMP >> ~/NAS/TestFileCreation/Node_harddisks.txt
+```
+
+You can sbatch this and check the outfile. The folder in the last line of the file
+~/NAS/TestFileCreation/Node_harddisks.txt is not available on the frontend - right?
+
+## Can we measure the speed differences
+
+To measure the time difference for a copy process we first need a reasonable big file.
+Use this command to create a random and useless file of 94Mb:
 
 ```{ bash, eval= FALSE }
 dd if=/dev/zero of=~/NAS/TestFileCreation/file.dat count=1024 bs=100024
 ```
 
-Add the lines
+Add to your script file the lines:
 ```
 time cp ~/NAS/TestFileCreation/file.dat $SNIC_TMP
 time cp $SNIC_TMP/file.dat $SNIC_TMP/localCopy.dat
 ```
+
+Sbatch your script and check the results.
 
 On the time of writing I got these values:
 
 ```
 real	0m5.124s
 user	0m0.000s
-sys	0m0.119s
+sys 	0m0.119s
 
 real	0m0.067s
 user	0m0.002s
-sys	0m0.065s
+sys 	0m0.065s
 ```
 
-But where are they?
-
+Quite a difference - even if 5 sec is not much time either. But where do you find these values?
 
 <details><summary>Solution</summary>
 <p>
@@ -259,13 +278,13 @@ In the file QnodeHD_"batch job id".err in your working directory.
 </p>
 </details>
 
-You can now delete the useless file using rm "filename".
+You can now delete the useless file.dat using rm "filename".
 Be very careful - files you delete using rm can not be regenerated!
 
 
 <details><summary>Please check that before you run it</summary>
 <p>
-<pre><code class="bash">rm 
+<pre><code class="bash">rm --help
 </code></pre>
 ~/NAS/TestFileCreation/file.dat
 </p>
@@ -305,7 +324,7 @@ Now get some information about the gencode.vM19.chr_patch_hapl_scaff.annotation.
 
 Perfect - now you know how big these gtf files are and which internal structure they have. It would be quite interesting to get information out of the file - or?
 
-Get all information regarding Gapdh out of the file (using grep) and put this information in a new 'Gapdh.gtf' file in your TestFileCreation folder. And as this is a step you might forget after some time I recommend you to store the command that created the gtf file in the file 'Gapdh.gtf.log'.
+Get all information regarding Gapdh out of the file (using grep) and put this information in a new 'Gapdh.gtf' file in your TestFileCreation folder. And as this is a step you might forget after some time I recommend you to store the command that created the new gtf file in the file 'Gapdh.gtf.log'.
 
 <details><summary>How to ...</summary>
 <p>
@@ -318,6 +337,7 @@ echo 'grep Gapdh ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_sc
 
 <details><summary>For specialists please explain ;-)</summary>
 <p>
+Do not try to understand that during the course. We do not have time for that.
 <pre><code class="bash">history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);' > Gapdh.gtf.log
 </code></pre>
 </p>
@@ -359,7 +379,7 @@ Have you thought about the .log file? No - do that ;-)
 
 I am sure you can think of more problems that can be solved like that.
 
-## Find - a very useful tool! Likely skip VERY COMPLICATED
+## Find - a very useful tool!
 
 The Linux/Unix find program is extremely useful if you want to apply any of the before mentioned steps to a list of files/folders. The tool is very powerful and with power comes responsibility. Be sure that your scripts do what they should do - using test files.
 
@@ -370,12 +390,19 @@ find ~
 ```
 
 It has a lot of options of which I use these: 
-- **-name** '*.R' finds all R scripts in the folder and the sub-folders
-- **-type d** finds all directories (f files)
+- **-name '*.R'** finds all R scripts in the folder and the sub-folders
+- **-type d** finds all directories (**f** files)
 - **-exec grep test {} +** applies 'grep test' to all identified files
 - **-maxdepth 1** stops at the first sub-folder level
 
-As an exercise please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles.
+
+## Advanced exercise - Likely skip VERY COMPLICATED
+
+To make it very clear right at the start: I would not use a bash script to do this. I would recommend you to try this here and remember, that you can do really complicated things using only bash.
+Just because bash can handle the problem does not translate into one should use bash for the problem.
+
+ 
+Please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles. And of cause do that in one go, not for each file separately. Do not hardcode the filenames.
 
 This is a very complex task. Probably bad as an example here, but the more complex the more to learn.
 
@@ -384,9 +411,9 @@ Lets break this problem into smaller parts:
 - **awk** selects the info we want to have
 - **separate outfiles** This is a big problem that kept me thinking quite a lot
 
-I figured that the easiest is to use [basename](https://linux.die.net/man/1/basename) and store this information in a [bash variable](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html). After that we can use the variable to create infile specific outfiles. Do you find a way to get rid of the 'for loop'?
+I figured that the easiest is to use [basename](https://linux.die.net/man/1/basename) and store this information in a [bash variable](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html). After that we can use the variable to create infile specific outfiles.
 
-As we use one variable per infile we need more bash programming: e.g. a [bash for loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html).
+The solution I found is using a [bash for loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html) to iterate over all files found in the find call; store the basename of this file in a variable and use this variable to store the awk results and create the log file.
 
 <details><summary>My solution</summary>
 <p>
@@ -396,17 +423,22 @@ As we use one variable per infile we need more bash programming: e.g. a [bash fo
  done
 </code></pre>
 
-Honestly this did take about 30 min for me, too ;-)
-<a href="https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file">Here</a> I learned that a bash for loop might be the easiest way to deal with all problems (in the last comment).</BR>
-Problems here: How to split the result up into multiple outfiles?</BR>
+Honestly it took me more than 30 min to find a first solution ;-).</BR>
+
+<a href="https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file">Here</a> I learned that a bash for loop might be the easiest way to deal with the "separate outfiles" problem (in the last comment).</BR>
+
+Problem here: How to split the result up into multiple outfiles?</BR>
+
 Fix: temporary variable bname to be populated in the for loop bash line 1. Right after that call awk in bash line 2.
-The bash lines are separated by '\n' after the do statement of the for loop and terminated with a '; done'.
+The bash lines are separated by '\n' after the do statement of the for loop and terminated with a 'done' on the last line.</BR>
+
+Do you find a way to get rid of the 'for loop'?
 </p>
 </details>
 
 
 # You have made it!
 
-Great! You have actually read and understand it all! You still are unsure - use the Internet to get more informations - come and ask is you can not figure it out. 
+Great! You have actually read and understand it all! But you still are untrained - use the Internet to get more informations - come and ask if you have a problem you can not solve on your own. 
 
 And please keep on training!
