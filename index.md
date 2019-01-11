@@ -1,93 +1,130 @@
+
+## The LSENS platform
+The platform is composed of three parts:
+- The login node (front-end)
+- The blades (where computation is done)
+- Data servers (where data is stored)
+
 ## Using UNIX and the Lunarc LSEN HPC system
 
 The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing. By the time you are done here, you should be able to do the following:
 
-- Log into Luarc using the ThinLinc client to enter the Lunarc desktop environment
+- Log into Lunarc using the ThinLinc client to enter the Lunarc desktop environment
 - Navigate the file structure and move files/folders around.
 - Queue up a job to run on the compute nodes (a job for example could be a sequence alignment from an NGS run)
 - More complicated bash usage with grep, awk, find, pipes and a tiny bit of bash scripting.
 
 ## Get your computer ready!
 
-We need you to have installed the ThinLink client on the computer you bring to the workshop.
-You can see this as a first exercise: Use google to learn about ThinLink, where to get it and how to install it for your system.  
-Use this knowledge to install it ;-)
+Security is a high priority on Aurora and this starts with the server rejecting connections from all but the BMC network. This means you can only use Aurora from within the BMC network and the VPN you installed makes this possible (even from outside the BMC).
 
-<details><summary>I can not use Google!</summary>
-<p>
-<a href="https://lunarc-documentation.readthedocs.io/en/latest/using_hpc_desktop/" target='_blank' >google: lunarc thinlink # first entry</a>
-</p>
-</details>
+So fire up your VPN client and login.
 
-Security is a high priority an aurora and this starts with the server rejecting connections from all but the BMC network. So you can only use Aurora from within the BMC network. VPN is also possible and will be configured in a pre-course session.
+## The ThinLink Interface
 
-### SFTP - Getting data into and out of the secure area
-
-You need an sftp client in order to get data into or out of aurora-ls2.lunarc.lu.se.
-You need to connect to port 22220 and you need your phone and the OTC application.
-
-The IN folder is inbox/"your username>, the OUT folder outbox/"your username"
-and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.
-
-
-### SSH Connection info
+Open up Thinlinc and login using your credentials. The server details are:
 
 - Server: aurora-ls2.lunarc.lu.se
 - Username: your aurora username
 - Password: your aurora password
 
 One time password:
-The one time password is created on your phone using either the 'Pocket Pass' app for MacOS or the '' app for android based phones.
+The login will prompt you for a one time passcode which is created on your phone using the 'Pocket Pass' app. Open the app and enter the 4 digit code that you set, and then enter the 6 digit number shown. You will then be logged into Aurora (the front-end). Repeat the process if it doesn't work.
 
-## The ThinLink Interface
 
-The window manager is based on [MATE Desktop](https://mate-desktop.org/).
+You will find yourself in the Linux system, and the window manager is based on [MATE Desktop](https://mate-desktop.org/). It looks like most other operating systems with a menu etc. Take a moment to look around.
 
-Most scientific programs for Bioinformaticians come without a graphical user interface and therefore the 'Terminal' is our most basic, but likely most used tool.
-The 'Terminal' is so important that the MATE desktop has a direcxt link to it in the top panel between the file explorer and the web browser icon.
+Most scientific programs for Bioinformaticians come without a graphical user interface (GUI) and therefore the 'Terminal' is our most used tool. The 'Terminal' is so important that the MATE desktop has a direct link to it in the top panel between the file explorer and the web browser icon.
 
-In fact you could just click on that as we will use it extensively in this course.
+Open a terminal.
 
+### Basic UNIX file structure
+To know where you are right now do:
+```{bash, eval = FALSE}
+pwd
+```
+To make a new folder do:
+```{bash, eval = FALSE}
+mkdir NewTestFolder
+```
+To make a new empty file do:
+```{bash, eval = FALSE}
+touch NewTestFile
+```
+To list all files and folders do:
+```{bash, eval = FALSE}
+ls
+```
+To copy the file you have made into the folder you made do:
+```{bash, eval = FALSE}
+cp NewTestFile NewTestFolder/NewTestFile_copy
+```
+To go into the new folder do:
+```{bash, eval = FALSE}
+cd NewTestFolder
+```
+or to use the full path:
+```{bash, eval = FALSE}
+cd /home/username/NewTestFolder
+```
+To rename a file use the move command `mv` (yes, its strange):
+```{bash, eval = FALSE}
+mv NewTestFile_copy NewTestFile_copy_version2
+```
+To actually move trhe file one level up do:
+```{bash, eval = FALSE}
+mv NewTestFile_copy_version2 ../
+```
+To go back one level and meet your file do:
+```{bash, eval = FALSE}
+cd ../
+```
+To delete the file you just moved do:
+```{bash, eval = FALSE}
+rm NewTestFile_copy_version2
+```
+To remove the folder you made do:
+```{bash, eval = FALSE}
+rm -R NewTestFolder
+```
 
 ### Data storage
+All user data should be stored on the data server - not in your home folder (your initial starting place when you login)! The home folder is on the front-end that doesn't have a lot of space, which is why big data must be kept on the data servers.
 
-All user data should be stored on our data server - not in your home folder!
+Your space on LS2 is kept at `/projects/fs1/username/no_backup` and you get there by doing:
 
 ```{bash, eval = FALSE  }
 # home folder
 ls ~
 ## data server (your folder) 
 me=`whoami`
-ls /projects/fs1/$me
+cd /projects/fs1/$me/no_backup
 ```
-<details><summary>More info on that</summary>
-<p>
-<ul>
-<li> '~' is an inbuilt variable that points to your home directory.</li>
-<li> 'me=`whoami`' creates a local variable with the output of the whoami (speak 'who am I') program which returns our username (stefanl for me) </li>
-<li> ls /projects/fs1/$me simply lists the contents of the folder e.g. /projects/fs1/stefanl</li>
-</ul>
-</p>
-</details>
+
+- **'~'** is an inbuilt variable that points to your home directory.
+- **'me=`whoami`'** creates a local variable with the output of the whoami (speak 'who am I') program which returns our username (stefanl for me).
+- **ls /projects/fs1/$me/no_backup** simply lists the contents of the folder e.g. /projects/fs1/stefanl
 
 
 ### Create a symbolic link to the data folder in your home directory.
 
-To allow this tutorial to work for all with only one path to the data folder please create a symbolic link to your data folder in your home directory.
+Typing `/projects/fs1/$me/no_backup` everytime you want to go there is a pain, and we can get rid of this need by creating a symbolic link to your data folder in your home directory.
 
-In the Terminal use the 'ln' program to create a link from '/projects/fs1/"your username"' to '~/NAS'.
+In the Terminal use the 'ln' command to create a link from '/projects/fs1/username/no_backup' to '~/NAS'. Do this by:
 
-<details><summary>How to create this link</summary>
-<p>
-This will make the data storage path available as ~/NAS</BR>
+```{bash, eval = FALSE}
+ln -s /projects/fs1/$me/no_backup ~/NAS
+```
 
-<pre><code class="bash">ln -s /projects/fs1/"your username" ~/NAS
-</code></pre>
-
-You can also use the '$me' variable we used earlier. 
-</p>
-</details>
-
+If you now type `ls` you will see the `NAS` folder there. You can now do:
+```{bash, eval = FALSE}
+cd NAS
+```
+Rather than having to do:
+```{bash, eval = FALSE}
+cd /projects/fs1/username/no_backup
+```
+Much nicer!
 
 ## Common programs
 
@@ -117,33 +154,56 @@ mkdir --help
 
 ### Create files / directories
 
-Go to your data server folder, create a folder with the name 'TestFileCreation' and create a file named README.txt in the folder. The file should contain the string 'Here we play with files and folders'.
-
-As a hint - you need the tools cd, mkdir and echo.
-
-Just writing the program name without additional information into the Terminal gives help on how to use the program.
-
-<details><summary>Solution</summary>
-<p>
-<pre><code class="bash">cd ~/NAS
+Go to your data server folder (if you aren't already there):
+```{bash, eval = FALSE}
+cd ~/NAS
+```
+Create a folder with the name 'TestFileCreation':
+```{bash, eval = FALSE}
 mkdir TestFileCreation
+```
+Go into the folder:
+```{bash, eval = FALSE}
 cd TestFileCreation
+```
+Then create a file named README.txt in the folder. The file should contain the string 'Here we play with files and folders': 
+```{bash, eval = FALSE}
 echo 'Here we play with files and folders' > README.txt
-</code></pre>
-</p>
-</details>
-
+```
+To look at the contents of a file from terminal you can use the `more` command:
+```{bash, eval = FALSE}
+more README.txt
+```
 
 ## Software installed on aurora
 
-Aurora uses the [module system](https://www.nersc.gov/users/software/user-environment/modules/) to provide multiple versions of one program to all users.
+People use different versions of the same program, which means these programs cannot be loaded and ready to go. They need to be activated, and Aurora uses the [module system](https://www.nersc.gov/users/software/user-environment/modules/) to do this. For example, lets say that we want to use a program called `git`.
 
-Please add 'git' to your bash session using 'module load'.
+To add 'git' to your bash session we need to find the available versions:
 
-<details><summary>Solution</summary>
-<pre><code class="bash">module spider git # which git versions are there
-module spider git/2.18.0 # what does git/2.18.0 depend on
-module load GCCcore/7.3.0 git/2.18.0 # load the module
+```{bash, eval = FALSE}
+module spider git
+```
+When we have decided which version we want we call `module spider` on the specific version to see what requirements it has:
+```{bash, eval = FALSE}
+module spider git/2.18.0
+```
+You will see that it also needs `GCCcore/7.3.0` (a dependency). To load these modules so you can use them do:
+```{bash, eval = FALSE}
+module load GCCcore/7.3.0 git/2.18.0
+```
+`git` will now be available to use for this session, and you can check this by calling:
+```{bash, eval = FALSE}
+git
+```
+
+
+
+
+<details><summary>Excercise: Try to load `samtools` version 1.6  into the session (we will use this later)</summary>
+<pre><code class="bash">module spider samtools # shows which R versions are there
+module spider SAMtools/1.6  # what samtools depends on
+module load icc/2017.4.196-GCC-6.4.0-2.28  impi/2017.3.196 SAMtools/1.6
 </code></pre>
 </p>
 </details>
@@ -151,11 +211,11 @@ module load GCCcore/7.3.0 git/2.18.0 # load the module
 
 ## Usage of the compute nodes
 
-The computer the ThinLink client connects you to is our frontend. ONE computer for all of you. So do not run computing intensive tasks there - NEVER. Instead you need to use our computing nodes to run heavy workload.
+The ThinLink client connects you to our front-end. This is ONE login computer for all of you, so do NOT run computing intensive tasks there - NEVER EVER. Instead you should use our blades to run compute heavy workloads.
 
-Aurora uses the [SLURM system](https://slurm.schedmd.com/) to manage the compute nodes.
+Aurora uses the [SLURM system](https://slurm.schedmd.com/) to manage the job queue that distributes jobs to the  compute nodes
 
-Now please pull our test files from git using
+You have already loaded git, so use this to pull our test file which is an unsorted BAM file by using:
 
 ```{bash, eval = FALSE }
 cd ~/NAS
@@ -165,134 +225,52 @@ git clone git@gitlab:stefanlang/UnixCourseMaterial.git
 cd UnixCourseMaterial
 ```
 
-You can use 'find ./' to show all files and folder in this git repository.c
-All our data is stored on a file server. This file server is mounted over a network connection which is significantly slower than the connections inside a computer. Hence it is extremely useful to store data that will be read multiple times, temporary files or not important outfiles on the compute node and copy the important outfiles back to the data server after the job has finished.
-
-Lets first get information about the compute node harddisk configurations using 'df -h':
-
+Do:
 ```{bash, eval = FALSE }
-df -h
+ls
 ```
+To see the files there. You will see `UnsortedTestFile.bam`.
 
-Prints the harddisk configuration of the frontend.
+### Sorting a BAM file using the blades
 
-```{bash, eval = FALSE }
-df -h > ~/NAS/TestFileCreation/Frontend_harddisks.txt
-```
+When certain jobs are run such as sequence alignment they create temporary files which are then removed/merged before the final output files are made. WE DO NOT WANT TEMPORARY FILES BEING WRITTEN TO THE STORAGE SERVERS! It creates unwantged and slow network traffic, but rather we want these files to be created on the blades instead which is much faster.
 
-Stores this information into a file.
+To send a job to the queue we need to make a SLURM script that tells the blades which programs to load and what to do on which files. In our example we are going to sort a small BAM file. To do this we will use the samtools program you learnt how to load earlier.
 
-To run the same script in on the compute nodes we need a SLURM script that we can submit to the SLURM process manager. 
+Firstly, open an editor and instert the following lines:
 
-```{bash, eval = FALSE }
-echo 'df -h > ~/NAS/TestFileCreation/Node_harddisks.txt' > ~/NAS/TestFileCreation/Query_NodeHarddisk.sh
-```
-
-But this file is not working - we need to modify it to look like that:
 
 ```
 #! /bin/bash
-#SBATCH -A lu2018-2-35 # the name of our aurora project
+#SBATCH -A lu2018-3-6 # the ID of our Aurora project
 #SBATCH -n 1 # how many processor cores to use
 #SBATCH -N 1 # how many processors to use (always use 1 here unless you know what you are doing)
 #SBATCH -t 00:20:00 # kill the job after ths hh::mm::ss time
-#SBATCH -J 'QnodeHD' # name of the job
-#SBATCH -o 'QnodeHD_%j.out' # stdout log file
-#SBATCH -e 'QnodeHD_%j.err' # stderr log file
-#SBATCH -p lu # which partition to use
-df -h > ~/NAS/TestFileCreation/Node_harddisks.txt #the real script part
+#SBATCH -J 'username_sort' # name of the job
+#SBATCH -o 'username_sort%j.out' # stdout log file
+#SBATCH -e 'username_sort%j.err' # stderr log file
+#SBATCH -p dell # which partition to use
+module load icc/2017.4.196-GCC-6.4.0-2.28  impi/2017.3.196 SAMtools/1.6
+samtools sort -T $SNIC_TMP UnsortedTestFile.bam > SortedTestFile.bam 
 ```
-
-Now try to run it using sbatch:
+Save this file as `sortbam.sh`. Now try to queue it up using sbatch:
 
 ```{bash, eval = FALSE }
-sbatch ~/NAS/TestFileCreation/Query_NodeHarddisk.sh
+sbatch sortbam.sh
+```
+You can see all the jobs on the queue using:
+```{bash, eval = FALSE }
+squeue
 ```
 
-<details><summary>You got an error message?</summary>
-<p>
-Sorry, that was intended. I have created and tested this script on the open side of aurora where I have a different account (-A) and am working on a different share (-p).
-You can use projinfo to find out which account you have access to and change the -A option accordingly and I can tell you that -p has to be set to 'dell'. Sorry ;-) 
-</p>
-</details>
+Your job will run, and the file SortedTestFile.bam will appear in time.
 
-## How do we use the compute node local storage?
+## What was `-T $SNIC_TMP` for?
 
-Lunarc has created an environment variable named $SNIC_TMP - lets see how to use that:
-
-Add the line 'echo $SNIC_TMP >> ~/NAS/TestFileCreation/Node_harddisks.txt' to your script and run it again.
-
-This is how the script file should look:
-
-```
-#! /bin/bash
-#SBATCH -A lu2018-2-35 # the name of our aurora project
-#SBATCH -n 1 # how many processor cores to use
-#SBATCH -N 1 # how many processors to use (always use 1 here unless you know what you are doing)
-#SBATCH -t 00:20:00 # kill the job after ths hh::mm::ss time
-#SBATCH -J 'QnodeHD' # name of the job
-#SBATCH -o 'QnodeHD_%j.out' # stdout log file
-#SBATCH -e 'QnodeHD_%j.err' # stderr log file
-#SBATCH -p lu # which partition to use
-df -h > ~/NAS/TestFileCreation/Node_harddisks.txt #the real script part
-echo $SNIC_TMP >> ~/NAS/TestFileCreation/Node_harddisks.txt
-```
-
-You can sbatch this and check the outfile. The folder in the last line of the file
-~/NAS/TestFileCreation/Node_harddisks.txt is not available on the frontend - right?
-
-## Can we measure the speed differences
-
-To measure the time difference for a copy process we first need a reasonable big file.
-Use this command to create a random and useless file of 94Mb:
-
-```{ bash, eval= FALSE }
-dd if=/dev/zero of=~/NAS/TestFileCreation/file.dat count=1024 bs=100024
-```
-
-Add to your script file the lines:
-```
-time cp ~/NAS/TestFileCreation/file.dat $SNIC_TMP
-time cp $SNIC_TMP/file.dat $SNIC_TMP/localCopy.dat
-```
-
-Sbatch your script and check the results.
-
-On the time of writing I got these values:
-
-```
-real	0m5.124s
-user	0m0.000s
-sys 	0m0.119s
-
-real	0m0.067s
-user	0m0.002s
-sys 	0m0.065s
-```
-
-Quite a difference - even if 5 sec is not much time either. But where do you find these values?
-
-<details><summary>Solution</summary>
-<p>
-In the file QnodeHD_"batch job id".err in your working directory.
-</p>
-</details>
-
-You can now delete the useless file.dat using rm "filename".
-Be very careful - files you delete using rm can not be regenerated!
+Lunarc has created an environment variable named $SNIC_TMP which allows you to point out the temp folder to programs that can use one.
 
 
-<details><summary>Please check that before you run it</summary>
-<p>
-<pre><code class="bash">rm --help
-</code></pre>
-~/NAS/TestFileCreation/file.dat
-</p>
-</details>
-
-
-## More complicated Terminal usage
-
+## More advanced terminal usage
 
 This part of the course is optional if we have enough time. If we are out of time you are welcome to try it on your own and drop by if there are questions.
 
@@ -442,3 +420,13 @@ Do you find a way to get rid of the 'for loop'?
 Great! You have actually read and understand it all! But you still are untrained - use the Internet to get more informations - come and ask if you have a problem you can not solve on your own. 
 
 And please keep on training!
+
+
+### SFTP - Getting data into and out of the secure area
+
+You need an sftp client (FileZilla for example) in order to get data into or out of aurora-ls2.lunarc.lu.se.
+You need to connect to port 22220 and you need your phone and the OTC application.
+
+The IN folder is inbox/"your username>, the OUT folder outbox/"your username"
+and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.
+
