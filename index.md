@@ -342,6 +342,9 @@ You could use awk here!
 grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 10000002) ) {print}}' > chr4_10000002_19000002.genes.gtf
 </code></pre>
 </p>
+
+I created the fname variable to focus on the important parts of the awk call. You could of cause also get rid of the initial grep if you like.
+
 </details>
 
 You are of cause not limited to the usage of [awk](https://www.gnu.org/software/gawk/manual/gawk.html#Getting-Started) you could also implement the logics using Perl, Python or even C. 
@@ -376,9 +379,9 @@ It has a lot of options of which I use these:
 
 ## Advanced exercise - Likely skip VERY COMPLICATED
 
-To make it very clear right at the start: I would not use a bash script to do this. I would recommend you to try this here and remember, that you can do really complicated things using only bash.
-Just because bash can handle the problem does not translate into one should use bash for the problem.
+To make it very clear right at the start: I would not use a bash script to do this. Nevertheless I would recommend you to try this here and remember that you can do really complicated things using 'just' bash scripts.
 
+BUT just because bash can handle the problem does not translate into one should use bash for the problem.
  
 Please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles. And of cause do that in one go, not for each file separately. Do not hardcode the filenames.
 
