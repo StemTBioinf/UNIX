@@ -425,7 +425,7 @@ Great! You have actually read and understand it all! But you still are untrained
 And please keep on training!
 
 
-### SFTP - Getting data into and out of the secure area
+## Additional info: SFTP - Getting data into and out of the secure area
 
 You need an sftp client (FileZilla for example) in order to get data into or out of aurora-ls2.lunarc.lu.se.
 You need to connect to port 22220 and you need your phone and the OTC application.
