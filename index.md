@@ -67,6 +67,22 @@ or to use the full path:
 ```{bash, eval = FALSE}
 cd /home/username/NewTestFolder
 ```
+Oops - this did not work - right? You need to change the 'username' to your actual user name.
+
+You do not know your username?
+```{bash, eval = FALSE}
+whoami
+```
+Will tell you your username and
+```{bash, eval = FALSE}
+me=`whoami`
+``` 
+will store this user name in a BASH variable that we can use now.
+```{bash, eval = FALSE}
+cd /home/$me/NewTestFolder
+```
+Nice - or?
+
 To rename a file use the move command `mv` (yes, its strange):
 ```{bash, eval = FALSE}
 mv NewTestFile_copy NewTestFile_copy_version2
@@ -100,7 +116,7 @@ ls ~
 me=`whoami`
 cd /projects/fs1/$me/no_backup
 ```
-
+All steps explained:
 - **'~'** is an inbuilt variable that points to your home directory.
 - **'me=`whoami`'** creates a local variable with the output of the whoami (speak 'who am I') program which returns our username (stefanl for me).
 - **ls /projects/fs1/$me/no_backup** simply lists the contents of the folder e.g. /projects/fs1/stefanl
@@ -118,7 +134,7 @@ ln -s /projects/fs1/$me/no_backup ~/NAS
 
 If you now type `ls` you will see the `NAS` folder there. You can now do:
 ```{bash, eval = FALSE}
-cd NAS
+cd ~/NAS
 ```
 Rather than having to do:
 ```{bash, eval = FALSE}
@@ -186,11 +202,11 @@ module spider git
 ```
 When we have decided which version we want we call `module spider` on the specific version to see what requirements it has:
 ```{bash, eval = FALSE}
-module spider git/2.18.0
+module spider git/2.14.1
 ```
 You will see that it also needs `GCCcore/7.3.0` (a dependency). To load these modules so you can use them do:
 ```{bash, eval = FALSE}
-module load GCCcore/7.3.0 git/2.18.0
+module load GCCcore/6.4.0 git/2.14.1
 ```
 `git` will now be available to use for this session, and you can check this by calling:
 ```{bash, eval = FALSE}
@@ -200,10 +216,10 @@ git
 
 
 
-<details><summary>Excercise: Try to load `samtools` version 1.6  into the session (we will use this later)</summary>
+<details><summary>Excercise: Try to load `samtools` version 1.7  into the session (we will use this later)</summary>
 <pre><code class="bash">module spider samtools # shows which R versions are there
-module spider SAMtools/1.6  # what samtools depends on
-module load icc/2017.4.196-GCC-6.4.0-2.28  impi/2017.3.196 SAMtools/1.6
+module spider SAMtools/1.7  # what samtools depends on
+module load GCC/6.4.0-2.28  OpenMPI/2.1.2 SAMtools/1.7
 </code></pre>
 </p>
 </details>
@@ -218,7 +234,7 @@ Aurora uses the [SLURM system](https://slurm.schedmd.com/) to manage the job que
 You have already loaded git, so use this to pull our test file which is an unsorted BAM file by using:
 
 ```{bash, eval = FALSE }
-cd ~/NAS
+cd ~/NAS/TestFileCreation
 mkdir git
 cd git
 git clone git@gitlab:stefanlang/UnixCourseMaterial.git
@@ -233,16 +249,16 @@ To see the files there. You will see `UnsortedTestFile.bam`.
 
 ### Sorting a BAM file using the blades
 
-When certain jobs are run such as sequence alignment they create temporary files which are then removed/merged before the final output files are made. WE DO NOT WANT TEMPORARY FILES BEING WRITTEN TO THE STORAGE SERVERS! It creates unwantged and slow network traffic, but rather we want these files to be created on the blades instead which is much faster.
+When certain jobs are run such as sequence alignment they create temporary files which are then removed/merged before the final output files are made. WE DO NOT WANT TEMPORARY FILES BEING WRITTEN TO THE STORAGE SERVERS! It creates unwanted and slow network traffic, but rather we want these files to be created on the blades instead which is much faster.
 
-To send a job to the queue we need to make a SLURM script that tells the blades which programs to load and what to do on which files. In our example we are going to sort a small BAM file. To do this we will use the samtools program you learnt how to load earlier.
+To send a job to the queue we need to make a SLURM script that tells the blades which programs to load and what to do on which files. In our example we are going to sort a small BAM file. To do this we will use the samtools program you learned how to load earlier.
 
-Firstly, open an editor and instert the following lines:
+Firstly, open an editor and insert the following lines:
 
 
 ```
 #! /bin/bash
-#SBATCH -A lu2018-3-6 # the ID of our Aurora project
+#SBATCH -A lsens2018-3-6 # the ID of our Aurora project
 #SBATCH -n 1 # how many processor cores to use
 #SBATCH -N 1 # how many processors to use (always use 1 here unless you know what you are doing)
 #SBATCH -t 00:20:00 # kill the job after ths hh::mm::ss time
@@ -250,7 +266,7 @@ Firstly, open an editor and instert the following lines:
 #SBATCH -o 'username_sort%j.out' # stdout log file
 #SBATCH -e 'username_sort%j.err' # stderr log file
 #SBATCH -p dell # which partition to use
-module load icc/2017.4.196-GCC-6.4.0-2.28  impi/2017.3.196 SAMtools/1.6
+module load GCC/6.4.0-2.28  OpenMPI/2.1.2 SAMtools/1.7
 samtools sort -T $SNIC_TMP UnsortedTestFile.bam > SortedTestFile.bam 
 ```
 Save this file as `sortbam.sh`. Now try to queue it up using sbatch:
@@ -272,7 +288,13 @@ Lunarc has created an environment variable named $SNIC_TMP which allows you to p
 
 ## More advanced terminal usage
 
-This part of the course is optional if we have enough time. If we are out of time you are welcome to try it on your own and drop by if there are questions.
+This part of the course is optional if we have enough time. 
+
+This part can be called advanced and will take way more concentration that the previous part.
+
+Try to use e.g. google to answer your questions first.
+
+If we are out of time you are welcome to try it on your own and drop by if there are questions.
 
 
 ### Extract information from a file
@@ -282,7 +304,7 @@ On aurora we store genome information in a special folder that is readable by al
 ```{bash, eval=FALSE }
 ls /projects/fs1/common/genome/lunarc/
 # e.g. gencode information mv19
-ls /projects/fs1/common/genome/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+ls -lh /projects/fs1/common/genome/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
 ```
 
 These folders soon get very long and therefore I recommend you to create links (again):
@@ -298,7 +320,18 @@ This will make the data storage path available as ~/lunarc</BR>
 </p>
 </details>
 
-Now get some information about the gencode.vM19.chr_patch_hapl_scaff.annotation.gtf file using ls, wc, head and tail.
+Now get some information about the gencode.vM19.chr_patch_hapl_scaff.annotation.gtf file using ls, wc and head.
+
+<details><summary>Simple - really</summary>
+<p>
+This will make the data storage path available as ~/lunarc</BR>
+
+<pre><code class="bash">ls -lh ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+wc -l ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+head ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+</code></pre>
+</p>
+</details>
 
 Perfect - now you know how big these gtf files are and which internal structure they have. It would be quite interesting to get information out of the file - or?
 
@@ -313,37 +346,59 @@ echo 'grep Gapdh ~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_sc
 </p>
 </details>
 
-<details><summary>For specialists please explain ;-)</summary>
+<details><summary>For specialists</summary>
 <p>
-Do not try to understand that during the course. We do not have time for that.
+You could replace the 'echo' command in the script with this construct. 
+
 <pre><code class="bash">history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);' > Gapdh.gtf.log
 </code></pre>
 </p>
 </details>
 
+This construct is piping output from one command into another using the '|' sign. Hence you can inspect the different parts of the command by dissecting it part by part:
+<pre><code class="bash">history
+history | tail -n2 
+history | tail -n2 | head -n1
+history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);'
+</code></pre>
+</p>
+<p>
+Do not try to understand that during the course. But you can use it as some kind of black magic to get the last command into the .log file.
+</p>
+</details>
+
+
 ## Pipes
 
-Pipes are a Linux/Unix way to copy information between program calls. Pipes are used all the time in Bioinformatics and therefore the [Pipe concept needs explanation](https://en.wikipedia.org/wiki/Pipeline_(Unix)). 
+The 'For specialists' example did use a pipe to feed the output of one command into another command.
+
+Pipes are a Linux/Unix way to copy information between program calls. Pipes are used all the time in Bioinformatics and therefore the [Pipe concept needs explanation](https://en.wikipedia.org/wiki/Pipeline_(Unix\)). 
 
 You have used pipes all the time as each | and > is 'piping' information from one process to another or into a file.
 
-I do not want to go into detail here, but read up on that it might become important for you later on.
+I do not want to go into detail here, but read up on that - it might become important for you later on.
 
 ## Extract with more conditions
 
-If you would want to extract all genes from a certain chomosome area you need more than just one grep.
-You could use awk here!
+If you would want to extract all genes from a certain chromosome area you need more than just one grep.
+In fact grep can not do this efficiently - you can/have to use awk here!
 
-**Task:** get all genes from chr4 between bp 10000002 and 19000002 and store the info in the file 'chr4_10000002_19000002.genes.gtf'.
+**Task:** get all genes from chr4 between bp 10000002 and 19000002 and store the info in the file '~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf'.
 
 <details><summary>How to use awk to get gene information</summary>
 <p>
 <pre><code class="bash">fname=~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
-grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 10000002) ) {print}}' > chr4_10000002_19000002.genes.gtf
+grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 10000002) ) {print}}' > ~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf
 </code></pre>
 </p>
 
-I created the fname variable to focus on the important parts of the awk call. You could of cause also get rid of the initial grep if you like.
+I created the $fname variable to focus on the important parts of the awk call. You could of cause also get rid of the initial grep if you like:
+
+<pre><code class="bash">fname=~/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
+awk '{ if ( ($3 == "gene" && $1 == "chr4") && ($4 < 19000002 && $5 > 10000002) ) {print}}' $fname > ~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf
+</code></pre>
+
+Much quicker - right?
 
 </details>
 
@@ -354,9 +409,13 @@ In Perl the awk call would look like that:
 ```{bash, eval=FALSE }
 perl -lane 'if ( $F[0] eq "chr4" and $F[2] eq "gene" and $F[3] < 19000002 and $F[4] > 10000002 ) { print } ' $fname > chr4_10000002_19000002.genes.gtf
 ```
-It is a little slower in Perl than using awk, but Perl is not known for it's speed, rather for it's string manipulation capabilities and regular expressions.
+It is slower in Perl than using awk, but Perl is not known for it's speed, rather for it's string manipulation capabilities and regular expressions.
 
 Have you thought about the .log file? No - do that ;-)
+
+```{bash, eval=FALSE }
+history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);' > ~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf.log
+```
 
 I am sure you can think of more problems that can be solved like that.
 
@@ -377,45 +436,40 @@ It has a lot of options of which I use these:
 - **-maxdepth 1** stops at the first sub-folder level
 
 
-## Advanced exercise - Likely skip VERY COMPLICATED
+## Advanced bash scripting exercise
+
+Here I tried to come up with a really complicated task that should enable you to try more things.
+
+You need to keep on using Bash scripting to not forget.
 
 To make it very clear right at the start: I would not use a bash script to do this. Nevertheless I would recommend you to try this here and remember that you can do really complicated things using 'just' bash scripts.
 
-BUT just because bash can handle the problem does not translate into one should use bash for the problem.
- 
+**TASK:**
 Please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles. And of cause do that in one go, not for each file separately. Do not hardcode the filenames.
 
-This is a very complex task. Probably bad as an example here, but the more complex the more to learn.
+This is a very complex task. Use google to find some help. I have linked to all web resources I have used.
 
 Lets break this problem into smaller parts:
 - **find** selects the files we want to work on
 - **awk** selects the info we want to have
 - **separate outfiles** This is a big problem that kept me thinking quite a lot
 
-I figured that the easiest is to use [basename](https://linux.die.net/man/1/basename) and store this information in a [bash variable](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html). After that we can use the variable to create infile specific outfiles.
+I figured that the easiest is to use [basename](https://linux.die.net/man/1/basename) (gets the name of a file as it would show in the windows explorer) and store this information in a [bash variable](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html). After that we can use the variable to create infile specific outfiles.
 
-The solution I found is using a [bash for loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html) to iterate over all files found in the find call; store the basename of this file in a variable and use this variable to store the awk results and create the log file.
+The solution I found uses a [bash for loop](http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html) to iterate over all files found in the find call; stores the basename of this file in a variable and uses this variable to store the awk results. I could not make the log file work in a reasonable time frame (<2h). Even the first solution took me about 30 min.
 
-<details><summary>My solution</summary>
-<p>
-<pre><code class="bash">for f in $(find ~/lunarc/genomes/mouse/ -name '*.gtf' ); do bname=`basename $f`
+```{bash , eval=FALSE }
+for f in $(find ~/lunarc/genomes/mouse/ -name '*.gtf' ); do bname=`basename $f`
  awk '{ if ( ($3 ~ /gene/ && ($1 == "chr4" || $1 == "4") ) && ($4 < 19000002 && $5 > 10000002 )) { print } }' $f > ~/NAS/TestFileCreation/${bname}
- history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);' > ~/NAS/TestFileCreation/$bname.log
  done
-</code></pre>
+```
 
-Honestly it took me more than 30 min to find a first solution ;-).</BR>
+[Here](https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file) I learned that a bash for loop might be the easiest way to deal with the "separate outfiles" problem (in the last comment).
 
-<a href="https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file">Here</a> I learned that a bash for loop might be the easiest way to deal with the "separate outfiles" problem (in the last comment).</BR>
+I had to use a temporary variable bname to be populated in the for loop bash line 1. Right after that call awk in bash line 2. The bash lines are separated by '\n' after the do statement of the for loop and terminated with a 'done' on the last line.
 
-Problem here: How to split the result up into multiple outfiles?</BR>
+Do you find a way to create the .log file? I did not - and that is where **I** normally start to use another scripting language. **Perl**, Python or others. 
 
-Fix: temporary variable bname to be populated in the for loop bash line 1. Right after that call awk in bash line 2.
-The bash lines are separated by '\n' after the do statement of the for loop and terminated with a 'done' on the last line.</BR>
-
-Do you find a way to get rid of the 'for loop'?
-</p>
-</details>
 
 
 # You have made it!
