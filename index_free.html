@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>The Aurora platform (open)</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h2>The Aurora platform (open)</h2>
+
+<p>The platform is composed of three parts:</p>
+
+<ul>
+<li>The login node (front-end)</li>
+<li>The blades (where computation is done)</li>
+<li>Data servers (where data is stored)</li>
+</ul>
+
+<h2>Using UNIX and the Lunarc LSEN HPC system</h2>
+
+<p>The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing. By the time you are done here, you should be able to do the following:</p>
+
+<ul>
+<li>Log into Lunarc using the ThinLinc client to enter the Lunarc desktop environment</li>
+<li>Navigate the file structure and move files/folders around.</li>
+<li>Queue up a job to run on the compute nodes (a job for example could be a sequence alignment from an NGS run)</li>
+<li>More complicated bash usage with grep, awk, find, pipes and a tiny bit of bash scripting.</li>
+</ul>
+
+<h2>Get your computer ready!</h2>
+
+<p>For the &#39;free&#39; part of aurora you are legally only allowed to work with none human sequencing data.
+Human sequencing data has to be stored and processed on the secure LSENS2 version of aurora.</p>
+
+<p>This tutorial is for the not restricted part of aurora and will not work on lsens2!</p>
+
+<p>But on the plus side you &#39;only&#39; need to install ThinLink.</p>
+
+<h2>The ThinLink Interface</h2>
+
+<p>Open up Thinlinc and login using your credentials. The server details are:</p>
+
+<ul>
+<li>Server: aurora.lunarc.lu.se</li>
+<li>Username: your aurora username</li>
+<li>Password: your aurora password</li>
+</ul>
+
+<p>One time password:
+The login will prompt you for a one time passcode which is created on your phone using the &#39;Pocket Pass&#39; app. Open the app and enter the 4 digit code that you set, and then enter the 6 digit number shown. You will then be logged into Aurora (the front-end). Repeat the process if it doesn&#39;t work.</p>
+
+<p>You will find yourself in the Linux system, and the window manager is based on <a href="https://mate-desktop.org/">MATE Desktop</a>. It looks like most other operating systems with a menu etc. Take a moment to look around.</p>
+
+<p>Most scientific programs for Bioinformaticians come without a graphical user interface (GUI) and therefore the &#39;Terminal&#39; is our most used tool. The &#39;Terminal&#39; is so important that the MATE desktop has a direct link to it in the top panel between the file explorer and the web browser icon.</p>
+
+<p>Open a terminal.</p>
+
+<h3>Basic UNIX file structure</h3>
+
+<p>To know where you are right now do:</p>
+
+<pre><code class="bash">pwd
+</code></pre>
+
+<p>To make a new folder do:</p>
+
+<pre><code class="bash">mkdir NewTestFolder
+</code></pre>
+
+<p>To make a new empty file do:</p>
+
+<pre><code class="bash">touch NewTestFile
+</code></pre>
+
+<p>To list all files and folders do:</p>
+
+<pre><code class="bash">ls
+</code></pre>
+
+<p>To copy the file you have made into the folder you made do:</p>
+
+<pre><code class="bash">cp NewTestFile NewTestFolder/NewTestFile_copy
+</code></pre>
+
+<p>To go into the new folder do:</p>
+
+<pre><code class="bash">cd NewTestFolder
+</code></pre>
+
+<p>or to use the full path:</p>
+
+<pre><code class="bash">cd /home/username/NewTestFolder
+</code></pre>
+
+<p>Oops - this did not work - right? You need to change the &#39;username&#39; to your actual user name.</p>
+
+<p>You do not know your username?</p>
+
+<pre><code class="bash">whoami
+</code></pre>
+
+<p>Will tell you your username and</p>
+
+<pre><code class="bash">me=`whoami`
+</code></pre>
+
+<p>will store this user name in a BASH variable that we can use now.</p>
+
+<pre><code class="bash">cd /home/$me/NewTestFolder
+</code></pre>
+
+<p>Nice - or?</p>
+
+<p>To rename a file use the move command <code>mv</code> (yes, its strange):</p>
+
+<pre><code class="bash">mv NewTestFile_copy NewTestFile_copy_version2
+</code></pre>
+
+<p>To actually move trhe file one level up do:</p>
+
+<pre><code class="bash">mv NewTestFile_copy_version2 ../
+</code></pre>
+
+<p>To go back one level and meet your file do:</p>
+
+<pre><code class="bash">cd ../
+</code></pre>
+
+<p>To delete the file you just moved do:</p>
+
+<pre><code class="bash">rm NewTestFile_copy_version2
+</code></pre>
+
+<p>To remove the folder you made do:</p>
+
+<pre><code class="bash">rm -R NewTestFolder
+</code></pre>
+
+<h3>Data storage</h3>
+
+<p>All user data should be stored on the data server - not in your home folder (your initial starting place when you login)! The home folder is on the front-end that doesn&#39;t have a lot of space, which is why big data must be kept on the data servers.</p>
+
+<p>Your space on LS2 is kept at <code>/lunarc/nobackup/users/username</code> and you get there by doing:</p>
+
+<pre><code class="bash"># home folder
+ls ~
+## data server (your folder) 
+me=`whoami`
+cd /lunarc/nobackup/users/$me
+</code></pre>
+
+<p>All steps explained:</p>
+
+<ul>
+<li><strong>&#39;~&#39;</strong> is an inbuilt variable that points to your home directory.</li>
+<li><strong>&#39;me=<code>whoami</code>&#39;</strong> creates a local variable with the output of the whoami (speak &#39;who am I&#39;) program which returns our username (stefanl for me).</li>
+<li><strong>ls /projects/fs1/$me/no_backup</strong> simply lists the contents of the folder e.g. /projects/fs1/stefanl</li>
+</ul>
+
+<h3>Create a symbolic link to the data folder in your home directory.</h3>
+
+<p>Typing <code>/lunarc/nobackup/users/$me</code> everytime you want to go there is a pain, and we can get rid of this need by creating a symbolic link to your data folder in your home directory.</p>
+
+<p>In the Terminal use the &#39;ln&#39; command to create a link from &#39;/projects/fs1/username/no_backup&#39; to &#39;~/NAS&#39;. Do this by:</p>
+
+<pre><code class="bash">ln -s /lunarc/nobackup/users/$me ~/NAS
+</code></pre>
+
+<p>If you now type <code>ls</code> you will see the <code>NAS</code> folder there. You can now do:</p>
+
+<pre><code class="bash">cd ~/NAS
+</code></pre>
+
+<p>Rather than having to do:</p>
+
+<pre><code class="bash">cd /lunarc/nobackup/users/$me
+</code></pre>
+
+<p>Much nicer!</p>
+
+<h2>Common programs</h2>
+
+<p>Every Linux/Unix installation has a basic set of tools installed that are extremely helpful for the daily work.</p>
+
+<p>Today we already used cd and ln which moves between directories respectively links files/directories to other locations.</p>
+
+<p>Other very commonly used programs are ls, touch, cp, mkdir, mv, rm, echo, cat, cut, head, tail, grep, wc, tar, gzip, gunzip and <a href="https://www.tutorialspoint.com/unix_commands/index.htm", target='_blank'>others</a>.</p>
+
+<p>You can read up on these programs using:</p>
+
+<pre><code class="bash"># get info to a program
+man &quot;program name&quot;
+</code></pre>
+
+<p>Unfortunately this is not working on aurora. The Internet also contains all this information.
+All well programmed command line tools do also report a basic help if you use them in the wrong way - like without options at all. Try it:</p>
+
+<pre><code class="bash">mkdir
+</code></pre>
+
+<pre><code class="bash">mkdir --help
+</code></pre>
+
+<pre><code>## Usage: mkdir [OPTION]... DIRECTORY...
+## Create the DIRECTORY(ies), if they do not already exist.
+## 
+## Mandatory arguments to long options are mandatory for short options too.
+##   -m, --mode=MODE   set file mode (as in chmod), not a=rwx - umask
+##   -p, --parents     no error if existing, make parent directories as needed
+##   -v, --verbose     print a message for each created directory
+##   -Z                   set SELinux security context of each created directory
+##                          to the default type
+##       --context[=CTX]  like -Z, or if CTX is specified then set the SELinux
+##                          or SMACK security context to CTX
+##       --help display this help and exit
+##       --version output version information and exit
+## 
+## GNU coreutils online help: &lt;http://www.gnu.org/software/coreutils/&gt;
+## Full documentation at: &lt;http://www.gnu.org/software/coreutils/mkdir&gt;
+## or available locally via: info &#39;(coreutils) mkdir invocation&#39;
+</code></pre>
+
+<h3>Create files / directories</h3>
+
+<p>Go to your data server folder (if you aren&#39;t already there):</p>
+
+<pre><code class="bash">cd ~/NAS
+</code></pre>
+
+<p>Create a folder with the name &#39;TestFileCreation&#39;:</p>
+
+<pre><code class="bash">mkdir TestFileCreation
+</code></pre>
+
+<p>Go into the folder:</p>
+
+<pre><code class="bash">cd TestFileCreation
+</code></pre>
+
+<p>Then create a file named README.txt in the folder. The file should contain the string &#39;Here we play with files and folders&#39;: </p>
+
+<pre><code class="bash">echo &#39;Here we play with files and folders&#39; &gt; README.txt
+</code></pre>
+
+<p>To look at the contents of a file from terminal you can use the <code>more</code> command:</p>
+
+<pre><code class="bash">more README.txt
+</code></pre>
+
+<h2>Software installed on aurora</h2>
+
+<p>People use different versions of the same program, which means these programs cannot be loaded and ready to go. They need to be activated, and Aurora uses the <a href="https://www.nersc.gov/users/software/user-environment/modules/">module system</a> to do this. For example, lets say that we want to use a program called <code>git</code>.</p>
+
+<p>To add &#39;git&#39; to your bash session we need to find the available versions:</p>
+
+<pre><code class="bash">module spider git
+</code></pre>
+
+<p>When we have decided which version we want we call <code>module spider</code> on the specific version to see what requirements it has:</p>
+
+<pre><code class="bash">module spider git/2.14.1
+</code></pre>
+
+<p>You will see that it also needs <code>GCCcore/7.3.0</code> (a dependency). To load these modules so you can use them do:</p>
+
+<pre><code class="bash">module load GCCcore/6.4.0 git/2.14.1
+</code></pre>
+
+<p><code>git</code> will now be available to use for this session, and you can check this by calling:</p>
+
+<pre><code class="bash">git
+</code></pre>
+
+<p><details><summary>Excercise: Try to load <code>samtools</code> version 1.7  into the session (we will use this later)</summary></p>
+
+<pre><code class="bash">module spider samtools # shows which R versions are there
+module spider SAMtools/1.7  # what samtools depends on
+module load GCC/6.4.0-2.28  OpenMPI/2.1.2 SAMtools/1.7
+</code></pre>
+
+<p></p>
+</details></p>
+
+<h2>Usage of the compute nodes</h2>
+
+<p>The ThinLink client connects you to our front-end. This is ONE login computer for all of you, so do NOT run computing intensive tasks there - NEVER EVER. Instead you should use our blades to run compute heavy workloads.</p>
+
+<p>Aurora uses the <a href="https://slurm.schedmd.com/">SLURM system</a> to manage the job queue that distributes jobs to the  compute nodes</p>
+
+<p>You have already loaded git, so use this to pull our test file which is an unsorted BAM file by using:</p>
+
+<pre><code class="bash">cd ~/NAS/TestFileCreation
+mkdir git
+cd git
+git clone git@gitlab:stefanlang/UnixCourseMaterial.git
+cd UnixCourseMaterial
+</code></pre>
+
+<p>Do:</p>
+
+<pre><code class="bash">ls
+</code></pre>
+
+<p>To see the files there. You will see <code>UnsortedTestFile.bam</code>.</p>
+
+<h3>Sorting a BAM file using the blades</h3>
+
+<p>When certain jobs are run such as sequence alignment they create temporary files which are then removed/merged before the final output files are made. WE DO NOT WANT TEMPORARY FILES BEING WRITTEN TO THE STORAGE SERVERS! It creates unwanted and slow network traffic, but rather we want these files to be created on the blades instead which is much faster.</p>
+
+<p>To send a job to the queue we need to make a SLURM script that tells the blades which programs to load and what to do on which files. In our example we are going to sort a small BAM file. To do this we will use the samtools program you learned how to load earlier.</p>
+
+<p>Firstly, open an editor and insert the following lines:</p>
+
+<pre><code>#! /bin/bash
+#SBATCH -A lu2018-2-35 # the ID of our Aurora project
+#SBATCH -n 1 # how many processor cores to use
+#SBATCH -N 1 # how many processors to use (always use 1 here unless you know what you are doing)
+#SBATCH -t 00:20:00 # kill the job after ths hh::mm::ss time
+#SBATCH -J &#39;username_sort&#39; # name of the job
+#SBATCH -o &#39;username_sort%j.out&#39; # stdout log file
+#SBATCH -e &#39;username_sort%j.err&#39; # stderr log file
+#SBATCH -p dell # which partition to use
+module load GCC/6.4.0-2.28  OpenMPI/2.1.2 SAMtools/1.7
+samtools sort -T $SNIC_TMP UnsortedTestFile.bam &gt; SortedTestFile.bam 
+</code></pre>
+
+<p>Save this file as <code>sortbam.sh</code>. Now try to queue it up using sbatch:</p>
+
+<pre><code class="bash">sbatch sortbam.sh
+</code></pre>
+
+<p>You can see all the jobs on the queue using:</p>
+
+<pre><code class="bash">squeue
+</code></pre>
+
+<p>Your job will run, and the file SortedTestFile.bam will appear in time.</p>
+
+<h2>What was <code>-T $SNIC_TMP</code> for?</h2>
+
+<p>Lunarc has created an environment variable named $SNIC_TMP which allows you to point out the temp folder to programs that can use one.</p>
+
+<h2>More advanced terminal usage</h2>
+
+<p>This part of the course is optional if we have enough time. </p>
+
+<p>This part can be called advanced and will take way more concentration that the previous part.</p>
+
+<p>Try to use e.g. google to answer your questions first.</p>
+
+<p>If we are out of time you are welcome to try it on your own and drop by if there are questions.</p>
+
+<h3>Extract information from a file</h3>
+
+<p>On aurora we store genome information in a special folder that is readable by all users:</p>
+
+<pre><code class="bash">
+ls /lunarc/nobackup/projects/bmc-genome/scc/
+# e.g. gencode information mv19
+ls -lh /lunarc/nobackup/projects/bmc-genome/scc/genomes/mouse/mm10/gencode.vM4.annotation.gtf
+</code></pre>
+
+<p>These folders soon get very long and therefore I recommend you to create links (again):</p>
+
+<p>Link the /lunarc/nobackup/projects/bmc-genome/scc/ folder to your home directory.</p>
+
+<p><details><summary>How to create this link</summary></p>
+
+<p>
+This will make the data storage path available as ~/lunarc</BR>
+
+<pre><code class="bash">ln -s /lunarc/nobackup/projects/bmc-genome/scc/ ~/lunarc
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p>Now get some information about the gencode.vM19.chr_patch_hapl_scaff.annotation.gtf file using ls, wc and head.</p>
+
+<p><details><summary>Simple - really</summary></p>
+
+<p>
+This will make the data storage path available as ~/lunarc</BR>
+
+<pre><code class="bash">ls -lh ~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf
+wc -l ~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf
+head ~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p>Perfect - now you know how big these gtf files are and which internal structure they have. It would be quite interesting to get information out of the file - or?</p>
+
+<p>Get all information regarding Gapdh out of the file (using grep) and put this information in a new &#39;Gapdh.gtf&#39; file in your TestFileCreation folder. And as this is a step you might forget after some time I recommend you to store the command that created the new gtf file in the file &#39;Gapdh.gtf.log&#39;.</p>
+
+<p><details><summary>How to &hellip;</summary></p>
+
+<p>
+<pre><code class="bash">cd ~/NAS/TestFileCreation
+grep Gapdh ~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf > Gapdh.gtf
+echo 'grep Gapdh ~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf > Gapdh.gtf' > Gapdh.gtf.log
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p><details><summary>For specialists</summary></p>
+
+<p>
+You could replace the &lsquo;echo&rsquo; command in the script with this construct. 
+
+<pre><code class="bash">history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);' > Gapdh.gtf.log
+</code></pre>
+</p>
+
+<p></details></p>
+
+<p>This construct is piping output from one command into another using the &#39;|&#39; sign. Hence you can inspect the different parts of the command by dissecting it part by part:</p>
+
+<pre><code class="bash">history
+history | tail -n2 
+history | tail -n2 | head -n1
+history | tail -n2 | head -n1 | perl -lane 'shift(@F); print join(" ", @F);'
+</code></pre>
+
+<p></p></p>
+
+<p>
+Do not try to understand that during the course. But you can use it as some kind of black magic to get the last command into the .log file.
+</p>
+
+<p></details></p>
+
+<h2>Pipes</h2>
+
+<p>The &#39;For specialists&#39; example did use a pipe to feed the output of one command into another command.</p>
+
+<p>Pipes are a Linux/Unix way to copy information between program calls. Pipes are used all the time in Bioinformatics and therefore the <a href="https://en.wikipedia.org/wiki/Pipeline_(Unix)">Pipe concept needs explanation</a>. </p>
+
+<p>You have used pipes all the time as each | and &gt; is &#39;piping&#39; information from one process to another or into a file.</p>
+
+<p>I do not want to go into detail here, but read up on that - it might become important for you later on.</p>
+
+<h2>Extract with more conditions</h2>
+
+<p>If you would want to extract all genes from a certain chromosome area you need more than just one grep.
+In fact grep can not do this efficiently - you can/have to use awk here!</p>
+
+<p><strong>Task:</strong> get all genes from chr4 between bp 10000002 and 19000002 and store the info in the file &#39;~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf&#39;.</p>
+
+<p><details><summary>How to use awk to get gene information</summary></p>
+
+<p>
+<pre><code class="bash">fname=~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf
+grep -w gene $fname | awk '{ if ( $1 == "chr4" && ($4 < 19000002 && $5 > 10000002) ) {print}}' > ~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf
+</code></pre>
+</p>
+
+<p>I created the $fname variable to focus on the important parts of the awk call. You could of cause also get rid of the initial grep if you like:</p>
+
+<pre><code class="bash">fname=~/lunarc/genomes/mouse/mm10/gencode.vM4.annotation.gtf
+awk '{ if ( ($3 == "gene" && $1 == "chr4") && ($4 < 19000002 && $5 > 10000002) ) {print}}' $fname > ~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf
+</code></pre>
+
+<p>Much quicker - right?</p>
+
+<p></details></p>
+
+<p>You are of cause not limited to the usage of <a href="https://www.gnu.org/software/gawk/manual/gawk.html#Getting-Started">awk</a> you could also implement the logics using Perl, Python or even C. </p>
+
+<p>In Perl the awk call would look like that:</p>
+
+<pre><code class="bash">perl -lane &#39;if ( $F[0] eq &quot;chr4&quot; and $F[2] eq &quot;gene&quot; and $F[3] &lt; 19000002 and $F[4] &gt; 10000002 ) { print } &#39; $fname &gt; chr4_10000002_19000002.genes.gtf
+</code></pre>
+
+<p>It is slower in Perl than using awk, but Perl is not known for it&#39;s speed, rather for it&#39;s string manipulation capabilities and regular expressions.</p>
+
+<p>Have you thought about the .log file? No - do that ;-)</p>
+
+<pre><code class="bash">history | tail -n2 | head -n1 | perl -lane &#39;shift(@F); print join(&quot; &quot;, @F);&#39; &gt; ~/NAS/TestFileCreation/chr4_10000002_19000002.genes.gtf.log
+</code></pre>
+
+<p>I am sure you can think of more problems that can be solved like that.</p>
+
+<h2>Find - a very useful tool!</h2>
+
+<p>The Linux/Unix find program is extremely useful if you want to apply any of the before mentioned steps to a list of files/folders. The tool is very powerful and with power comes responsibility. Be sure that your scripts do what they should do - using test files.</p>
+
+<p>Anyhow - &#39;find&#39; does exactly that - it does find files for you:</p>
+
+<pre><code class="bash">find ~
+</code></pre>
+
+<p>It has a lot of options of which I use these: </p>
+
+<ul>
+<li><strong>-name &#39;*.R&#39;</strong> finds all R scripts in the folder and the sub-folders</li>
+<li><strong>-type d</strong> finds all directories (<strong>f</strong> files)</li>
+<li><strong>-exec grep test {} +</strong> applies &#39;grep test&#39; to all identified files</li>
+<li><strong>-maxdepth 1</strong> stops at the first sub-folder level</li>
+</ul>
+
+<h2>Advanced bash scripting exercise</h2>
+
+<p>Here I tried to come up with a really complicated task that should enable you to try more things.</p>
+
+<p>You need to keep on using Bash scripting to not forget.</p>
+
+<p>To make it very clear right at the start: I would not use a bash script to do this. Nevertheless I would recommend you to try this here and remember that you can do really complicated things using &#39;just&#39; bash scripts.</p>
+
+<p><strong>TASK:</strong>
+Please get all genes from all installed mouse gtf files in the area chr4:10000002-19000002 and put them into separate outfiles. And of cause do that in one go, not for each file separately. Do not hardcode the filenames.</p>
+
+<p>This is a very complex task. Use google to find some help. I have linked to all web resources I have used.</p>
+
+<p>Lets break this problem into smaller parts:</p>
+
+<ul>
+<li><strong>find</strong> selects the files we want to work on</li>
+<li><strong>awk</strong> selects the info we want to have</li>
+<li><strong>separate outfiles</strong> This is a big problem that kept me thinking quite a lot</li>
+</ul>
+
+<p>I figured that the easiest is to use <a href="https://linux.die.net/man/1/basename">basename</a> (gets the name of a file as it would show in the windows explorer) and store this information in a <a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-5.html">bash variable</a>. After that we can use the variable to create infile specific outfiles.</p>
+
+<p>The solution I found uses a <a href="http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-7.html">bash for loop</a> to iterate over all files found in the find call; stores the basename of this file in a variable and uses this variable to store the awk results. I could not make the log file work in a reasonable time frame (&lt;2h). Even the first solution took me about 30 min.</p>
+
+<pre><code class="bash">for f in $(find ~/lunarc/genomes/mouse/ -name &#39;*.gtf&#39; ); do bname=`basename $f`
+ awk &#39;{ if ( ($3 ~ /gene/ &amp;&amp; ($1 == &quot;chr4&quot; || $1 == &quot;4&quot;) ) &amp;&amp; ($4 &lt; 19000002 &amp;&amp; $5 &gt; 10000002 )) { print } }&#39; $f &gt; ~/NAS/TestFileCreation/${bname}
+ done
+</code></pre>
+
+<p><a href="https://stackoverflow.com/questions/45880730/awk-get-information-on-input-and-output-filenames-from-file">Here</a> I learned that a bash for loop might be the easiest way to deal with the &ldquo;separate outfiles&rdquo; problem (in the last comment).</p>
+
+<p>I had to use a temporary variable bname to be populated in the for loop bash line 1. Right after that call awk in bash line 2. The bash lines are separated by &#39;\n&#39; after the do statement of the for loop and terminated with a &#39;done&#39; on the last line.</p>
+
+<p>Do you find a way to create the .log file? I did not - and that is where <strong>I</strong> normally start to use another scripting language. <strong>Perl</strong>, Python or others. </p>
+
+<h1>You have made it!</h1>
+
+<p>Great! You have actually read and understand it all! But you still are untrained - use the Internet to get more informations - come and ask if you have a problem you can not solve on your own. </p>
+
+<p>And please keep on training!</p>
+
+<h2>Additional info: SFTP - Getting data into and out of the secure area</h2>
+
+<p>You need an sftp client (FileZilla for example) in order to get data into or out of aurora-ls2.lunarc.lu.se.
+You need to connect to port 22220 and you need your phone and the OTC application.</p>
+
+<p>The IN folder is inbox/&ldquo;your username&gt;, the OUT folder outbox/&quot;your username&rdquo;
+and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.</p>
+
+</body>
+
+</html>
