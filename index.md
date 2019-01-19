@@ -5,6 +5,8 @@ The platform is composed of three parts:
 - The blades (where computation is done)
 - Data servers (where data is stored)
 
+The aim of today is to make sure you understand how all these components work and how to use them optimally.
+
 ## Using UNIX and the Lunarc LSEN HPC system
 
 The purpose of this workshop is to get you familiar with the UNIX environment and using the Lunarc LSENS system for high-performance computing. By the time you are done here, you should be able to do the following:
@@ -12,13 +14,13 @@ The purpose of this workshop is to get you familiar with the UNIX environment an
 - Log into Lunarc using the ThinLinc client to enter the Lunarc desktop environment
 - Navigate the file structure and move files/folders around.
 - Queue up a job to run on the compute nodes (a job for example could be a sequence alignment from an NGS run)
-- More complicated bash usage with grep, awk, find, pipes and a tiny bit of bash scripting.
+- More complicated bash usage with grep, awk, find, pipes and a tiny bit of bash scripting (this is optional/for further study).
 
 ## Get your computer ready!
 
-Security is a high priority on Aurora and this starts with the server rejecting connections from all but the BMC network. This means you can only use Aurora from within the BMC network and the VPN you installed makes this possible (even from outside the BMC).
+Security is a high priority on Aurora LSENS2 and this starts with the server rejecting connections from all but the BMC network. This means you can only use LSENS2 from within the BMC network and the VPN you installed makes this possible (even from outside the BMC).
 
-So fire up your VPN client and login.
+So fire up your VPN client (Forticlient of Shrewsoft) and login.
 
 ## The ThinLink Interface
 
@@ -29,12 +31,12 @@ Open up Thinlinc and login using your credentials. The server details are:
 - Password: your aurora password
 
 One time password:
-The login will prompt you for a one time passcode which is created on your phone using the 'Pocket Pass' app. Open the app and enter the 4 digit code that you set, and then enter the 6 digit number shown. You will then be logged into Aurora (the front-end). Repeat the process if it doesn't work.
+The login will prompt you for a one-time passcode which is created on your phone using the 'Pocket Pass' app. Open the app and enter the 4 digit code that you set, and then enter the 6 digit number shown. You will then be logged into Aurora (the front-end). Repeat the process if it doesn't work.
 
 
 You will find yourself in the Linux system, and the window manager is based on [MATE Desktop](https://mate-desktop.org/). It looks like most other operating systems with a menu etc. Take a moment to look around.
 
-Most scientific programs for Bioinformaticians come without a graphical user interface (GUI) and therefore the 'Terminal' is our most used tool. The 'Terminal' is so important that the MATE desktop has a direct link to it in the top panel between the file explorer and the web browser icon.
+Most scientific programs for Bioinformaticians come without a graphical user interface (GUI) and therefore the 'Terminal' is our most used tool. 'Terminal' is so important that the MATE desktop has a direct link to it in the top panel between the file explorer and the web browser icon.
 
 Open a terminal.
 
@@ -83,11 +85,11 @@ cd /home/$me/NewTestFolder
 ```
 Nice - or?
 
-To rename a file use the move command `mv` (yes, its strange):
+To rename a file use the move command `mv` (yes, it's strange):
 ```{bash, eval = FALSE}
 mv NewTestFile_copy NewTestFile_copy_version2
 ```
-To actually move trhe file one level up do:
+To actually move the file one level up do:
 ```{bash, eval = FALSE}
 mv NewTestFile_copy_version2 ../
 ```
@@ -105,31 +107,31 @@ rm -R NewTestFolder
 ```
 
 ### Data storage
-All user data should be stored on the data server - not in your home folder (your initial starting place when you login)! The home folder is on the front-end that doesn't have a lot of space, which is why big data must be kept on the data servers.
+All user data should be stored on the data server - not in your home folder (your initial starting place when you login). The home folder is on the front-end that doesn't have a lot of space, which is why big data must be kept on the data servers.
 
-Your space on LS2 is kept at `/projects/fs1/username/no_backup` and you get there by doing:
+Your space on LS2 is kept at `/projects/fs1/username/` and you get there by doing:
 
 ```{bash, eval = FALSE  }
 # home folder
 ls ~
 ## data server (your folder) 
 me=`whoami`
-cd /projects/fs1/$me/no_backup
+cd /projects/fs1/$me/
 ```
 All steps explained:
 - **'~'** is an inbuilt variable that points to your home directory.
 - **'me=`whoami`'** creates a local variable with the output of the whoami (speak 'who am I') program which returns our username (stefanl for me).
-- **ls /projects/fs1/$me/no_backup** simply lists the contents of the folder e.g. /projects/fs1/stefanl
+- **ls /projects/fs1/$me/** simply lists the contents of the folder e.g. /projects/fs1/stefanl
 
 
 ### Create a symbolic link to the data folder in your home directory.
 
-Typing `/projects/fs1/$me/no_backup` everytime you want to go there is a pain, and we can get rid of this need by creating a symbolic link to your data folder in your home directory.
+Typing `/projects/fs1/$me/` everytime you want to go there is a pain, and we can get rid of this need by creating a symbolic link to your data folder in your home directory.
 
 In the Terminal use the 'ln' command to create a link from '/projects/fs1/username/no_backup' to '~/NAS'. Do this by:
 
 ```{bash, eval = FALSE}
-ln -s /projects/fs1/$me/no_backup ~/NAS
+ln -s /projects/fs1/$me/ ~/NAS
 ```
 
 If you now type `ls` you will see the `NAS` folder there. You can now do:
@@ -138,26 +140,22 @@ cd ~/NAS
 ```
 Rather than having to do:
 ```{bash, eval = FALSE}
-cd /projects/fs1/username/no_backup
+cd /projects/fs1/username
 ```
 Much nicer!
 
 ## Common programs
 
-Every Linux/Unix installation has a basic set of tools installed that are extremely helpful for the daily work.
+Every Linux/Unix installation has a basic set of tools installed that are extremely helpful for the daily work. Today we already used `cd` and `ln` which moves between directories respectively links files/directories to other locations.
 
-Today we already used cd and ln which moves between directories respectively links files/directories to other locations.
+Other very commonly used programs are `ls`, `touch`, `cp`, `mkdir`, `mv`, `rm`, `echo`, `cat`, `cut`, `head`, `tail`, `grep`, `wc`, `tar`, `gzip`, `gunzip` and [here](https://www.tutorialspoint.com/unix_commands/index.html) for others.
 
-Other very commonly used programs are ls, touch, cp, mkdir, mv, rm, echo, cat, cut, head, tail, grep, wc, tar, gzip, gunzip and <a href="https://www.tutorialspoint.com/unix_commands/index.htm", target='_blank'>others</a>.
-
-You can read up on these programs using:
+You can read up on what program does and how it works using:
 
 ```{bash, eval = FALSE }
-# get info to a program
 man "program name"
 ```
 
-Unfortunately this is not working on aurora. The Internet also contains all this information.
 All well programmed command line tools do also report a basic help if you use them in the wrong way - like without options at all. Try it:
 
 ```{bash, eval = FALSE}
@@ -168,7 +166,7 @@ mkdir
 mkdir --help
 ```
 
-### Create files / directories
+### Creating files / directories
 
 Go to your data server folder (if you aren't already there):
 ```{bash, eval = FALSE}
@@ -193,9 +191,9 @@ more README.txt
 
 ## Software installed on aurora
 
-People use different versions of the same program, which means these programs cannot be loaded and ready to go. They need to be activated, and Aurora uses the [module system](https://www.nersc.gov/users/software/user-environment/modules/) to do this. For example, lets say that we want to use a program called `git`.
+People use different versions of the same program, which means these programs cannot be loaded and ready to go. They need to be activated, and Aurora uses the [module system](https://lunarc-documentation.readthedocs.io/en/latest/aurora_modules/) to do this. For example, lets say that we want to use a program called `git`.
 
-To add 'git' to your bash session we need to find the available versions:
+To add 'git' to your session we need to find the available versions of git:
 
 ```{bash, eval = FALSE}
 module spider git
@@ -213,9 +211,6 @@ module load GCCcore/6.4.0 git/2.14.1
 git
 ```
 
-
-
-
 <details><summary>Excercise: Try to load `samtools` version 1.7  into the session (we will use this later)</summary>
 <pre><code class="bash">module spider samtools # shows which R versions are there
 module spider SAMtools/1.7  # what samtools depends on
@@ -229,7 +224,7 @@ module load GCC/6.4.0-2.28  OpenMPI/2.1.2 SAMtools/1.7
 
 The ThinLink client connects you to our front-end. This is ONE login computer for all of you, so do NOT run computing intensive tasks there - NEVER EVER. Instead you should use our blades to run compute heavy workloads.
 
-Aurora uses the [SLURM system](https://slurm.schedmd.com/) to manage the job queue that distributes jobs to the  compute nodes
+Aurora uses the [SLURM system](https://lunarc-documentation.readthedocs.io/en/latest/batch_system/) to manage the job queue that distributes jobs to the compute nodes.
 
 You have already loaded git, so use this to pull our test file which is an unsorted BAM file by using:
 
@@ -249,7 +244,7 @@ To see the files there. You will see `UnsortedTestFile.bam`.
 
 ### Sorting a BAM file using the blades
 
-When certain jobs are run such as sequence alignment they create temporary files which are then removed/merged before the final output files are made. WE DO NOT WANT TEMPORARY FILES BEING WRITTEN TO THE STORAGE SERVERS! It creates unwanted and slow network traffic, but rather we want these files to be created on the blades instead which is much faster.
+When certain jobs are run such as sequence alignment they create temporary files which are then removed/merged before the final output files are made. WE DO NOT WANT TEMPORARY FILES BEING WRITTEN TO THE STORAGE SERVERS! It creates unwanted and slow network traffic, but rather we want these files to be created on the blades where the computation is being run which is much faster.
 
 To send a job to the queue we need to make a SLURM script that tells the blades which programs to load and what to do on which files. In our example we are going to sort a small BAM file. To do this we will use the samtools program you learned how to load earlier.
 
@@ -269,7 +264,7 @@ Firstly, open an editor and insert the following lines:
 module load GCC/6.4.0-2.28  OpenMPI/2.1.2 SAMtools/1.7
 samtools sort -T $SNIC_TMP UnsortedTestFile.bam > SortedTestFile.bam 
 ```
-Save this file as `sortbam.sh`. Now try to queue it up using sbatch:
+Save this file as `sortbam.sh` in the same folder as where you have your bam file. Now try to queue it up using sbatch:
 
 ```{bash, eval = FALSE }
 sbatch sortbam.sh
@@ -285,8 +280,7 @@ Your job will run, and the file SortedTestFile.bam will appear in time.
 
 Lunarc has created an environment variable named $SNIC_TMP which allows you to point out the temp folder to programs that can use one.
 
-
-## More advanced terminal usage
+## Advanced terminal usage
 
 This part of the course is optional if we have enough time. 
 
