@@ -477,7 +477,6 @@ I had to use a temporary variable bname to be populated in the for loop bash lin
 Do you find a way to create the .log file? I did not - and that is where **I** normally start to use another scripting language. **Perl**, Python or others. 
 
 
-
 # You have made it!
 
 Great! You have actually read and understand it all! But you still are untrained - use the Internet to get more informations - come and ask if you have a problem you can not solve on your own. 
