@@ -282,6 +282,14 @@ Your job will run, and the file SortedTestFile.bam will appear in time.
 
 Lunarc has created an environment variable named $SNIC_TMP which allows you to point out the temp folder to programs that can use one.
 
+##SFTP - Getting data into and out of the secure area
+
+You need an sftp client (FileZilla for example) in order to get data into or out of aurora-ls2.lunarc.lu.se.
+You need to connect to port 22220 and you need your phone and the OTC application.
+
+The IN folder is inbox/"your username>, the OUT folder outbox/"your username"
+and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.
+
 
 ## More advanced terminal usage
 
@@ -475,13 +483,3 @@ Do you find a way to create the .log file? I did not - and that is where **I** n
 Great! You have actually read and understand it all! But you still are untrained - use the Internet to get more informations - come and ask if you have a problem you can not solve on your own. 
 
 And please keep on training!
-
-
-## Additional info: SFTP - Getting data into and out of the secure area
-
-You need an sftp client (FileZilla for example) in order to get data into or out of aurora-ls2.lunarc.lu.se.
-You need to connect to port 22220 and you need your phone and the OTC application.
-
-The IN folder is inbox/"your username>, the OUT folder outbox/"your username"
-and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.
-

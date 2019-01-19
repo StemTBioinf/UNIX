@@ -280,6 +280,36 @@ Your job will run, and the file SortedTestFile.bam will appear in time.
 
 Lunarc has created an environment variable named $SNIC_TMP which allows you to point out the temp folder to programs that can use one.
 
+## Additional info: SFTP - Getting data into and out of the secure area
+
+Fo this you will need to open and Terminal if you are on a Mac (Applications > Utilities > Terminal) and if you are on Windows 10 use WinSCP.
+
+For terminal users the command you need to connect is:
+
+```{bash, eval = FALSE }
+sftp -P 22220 username@aurora-ls2.lunarc.lu.se
+```
+
+When you are in you go to your outbox/inbox as needed:
+
+```{bash, eval = FALSE }
+cd inbox/username
+or
+cd outbox/username
+```
+
+To put a file in the inbox use:
+```{bash, eval = FALSE }
+put filename
+```
+
+To get a file from the outbox do:
+```{bash, eval = FALSE }
+get filename
+```
+
+If you need to upload more than one file then zip them up first before you do so.
+
 ## Advanced terminal usage
 
 This part of the course is optional if we have enough time. 
@@ -301,7 +331,7 @@ ls /projects/fs1/common/genome/lunarc/
 ls -lh /projects/fs1/common/genome/lunarc/genomes/mouse/GRCm38.p6/gencode.vM19.chr_patch_hapl_scaff.annotation.gtf
 ```
 
-These folders soon get very long and therefore I recommend you to create links (again):
+These folder paths get very long so we recommend you create symbolic links again:
 
 Link the /projects/fs1/common/genome/lunarc folder to your home directory.
 
@@ -471,13 +501,3 @@ Do you find a way to create the .log file? I did not - and that is where **I** n
 Great! You have actually read and understand it all! But you still are untrained - use the Internet to get more informations - come and ask if you have a problem you can not solve on your own. 
 
 And please keep on training!
-
-
-## Additional info: SFTP - Getting data into and out of the secure area
-
-You need an sftp client (FileZilla for example) in order to get data into or out of aurora-ls2.lunarc.lu.se.
-You need to connect to port 22220 and you need your phone and the OTC application.
-
-The IN folder is inbox/"your username>, the OUT folder outbox/"your username"
-and you can only copy one file/folder at a time and not recursively. Therefore I recommend to tar whichever folder you want to send to lsens2 before you transfer it. Zip, bzip2 or gzip is of cause also possible.
-
